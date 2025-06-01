@@ -1,0 +1,22 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build: .
+    container_name: springboot_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb+srv://ISMAbsence:Magal2022@ismabsence.k0bl1hh.mongodb.net/?retryWrites=true&w=majority&appName=ISMAbsence
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
