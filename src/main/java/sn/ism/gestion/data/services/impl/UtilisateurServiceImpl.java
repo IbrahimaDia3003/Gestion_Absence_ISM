@@ -6,21 +6,23 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+//import org.springframework.security.core.userdetails.User;
+//import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import sn.ism.gestion.data.entities.Utilisateur;
 import sn.ism.gestion.data.repositories.UtilisateurRepository;
 import sn.ism.gestion.data.services.IUtilisateurService;
+import sn.ism.gestion.utils.mapper.UtilisateurMapper;
+import sn.ism.gestion.web.dto.Response.UtilisateurSimpleResponse;
 
 @AllArgsConstructor
 @Service
 public class UtilisateurServiceImpl implements IUtilisateurService {
 
-    @Autowired
-    private UtilisateurRepository utilisateurRepo;
+    @Autowired private UtilisateurRepository utilisateurRepo;
+    @Autowired private UtilisateurMapper utilisateurMapper;
 
     @Override
     public Utilisateur create(Utilisateur object) {
@@ -59,20 +61,26 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
     }
 
     @Override
-    public Utilisateur findByLogin(String login) {
+    public Utilisateur findByLogin(String login)
+    {
         return utilisateurRepo.findByLogin(login)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec le login : " + login));
+                .orElse(null);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Utilisateur utilisateur = utilisateurRepo.findByLogin(login)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec login: " + login));
-
-        return org.springframework.security.core.userdetails.User
-                .withUsername(utilisateur.getLogin())
-                .password(utilisateur.getMotDePasse())
-                .authorities("ROLE_" + utilisateur.getRole().name())
-                .build();
-    }
+//    @Override
+//    public UtilisateurSimpleResponse loadUserByUsername(String login) throws UsernameNotFoundException {
+//        Utilisateur utilisateur = utilisateurRepo.findByLogin(login)
+//                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec login: " + login));
+//
+//        UtilisateurSimpleResponse utilisateurSimpleResponse = utilisateurMapper.toDto(utilisateur);
+//
+//        if(utilisateur ==null ) return null;
+//        return utilisateurSimpleResponse;
+//
+//        return org.springframework.security.core.userdetails.User
+//                .withUsername(utilisateur.getLogin())
+//                .password(utilisateur.getMotDePasse())
+//                .authorities("ROLE_" + utilisateur.getRole().name())
+//                .build();
+//    }
 }

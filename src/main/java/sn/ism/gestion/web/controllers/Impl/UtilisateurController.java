@@ -1,6 +1,5 @@
 package sn.ism.gestion.web.controllers.Impl;
 
-import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -8,13 +7,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+//import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+//import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import sn.ism.gestion.Config.Security.JwtService;
+//import sn.ism.gestion.Config.Security.JwtService;
 import sn.ism.gestion.data.entities.Utilisateur;
 import sn.ism.gestion.data.repositories.UtilisateurRepository;
 import sn.ism.gestion.data.services.IUtilisateurService;
@@ -33,50 +32,25 @@ public class UtilisateurController implements IUtilisateurController {
 
     private final IUtilisateurService utilisateurService;
     private final UtilisateurMapper utilisateurMapper;
-    private final UtilisateurRepository utilisateurRepository;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+//    private final UtilisateurRepository utilisateurRepository;
+//    private final JwtService jwtService;
+//    private final AuthenticationManager authenticationManager;
 
     @Override
     public ResponseEntity<Map<String, Object>> login(LoginRequest request) {
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getLogin(), request.getMotDePasse())
-            );
 
-            if (auth.isAuthenticated()) {
-                Utilisateur utilisateur = utilisateurRepository.findByLogin(request.getLogin())
-                        .orElse(null);
+        Utilisateur utilisateur = utilisateurService.findByLogin(request.getLogin());
 
-                if (utilisateur != null) {
-                    String token = jwtService.generateToken(utilisateur.getLogin());
-
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("token", token);
-                    data.put("utilisateur", utilisateur); // tu peux remplacer par un DTO si tu veux masquer le mot de passe
-
-                    return new ResponseEntity<>(
-                            RestResponse.response(HttpStatus.OK, data, "Connexion réussie"),
-                            HttpStatus.OK
-                    );
-                } else {
-                    return new ResponseEntity<>(
-                            RestResponse.response(HttpStatus.NOT_FOUND, null, "Utilisateur non trouvé"),
-                            HttpStatus.NOT_FOUND
-                    );
-                }
-            } else {
-                return new ResponseEntity<>(
-                        RestResponse.response(HttpStatus.UNAUTHORIZED, null, "Identifiants invalides"),
-                        HttpStatus.UNAUTHORIZED
-                );
-            }
-        } catch (Exception e) {
+        if (utilisateur==null)
             return new ResponseEntity<>(
-                    RestResponse.response(HttpStatus.UNAUTHORIZED, null, "Erreur d'authentification"),
-                    HttpStatus.UNAUTHORIZED
-            );
-        }
+                RestResponse.response(HttpStatus.NO_CONTENT, null, "utilisateurConnect"),
+                HttpStatus.NO_CONTENT);
+
+        UtilisateurSimpleResponse utilisateurSimpleResponse= utilisateurMapper.toDto(utilisateur);
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,
+                                                          utilisateurSimpleResponse,
+                                                    "utilisateurConnect"),
+                                                HttpStatus.OK);
     }
 
 

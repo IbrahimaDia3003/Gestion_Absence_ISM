@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import sn.ism.gestion.data.entities.*;
 import sn.ism.gestion.data.enums.ModeCours;
@@ -28,7 +28,7 @@ public class DataInitializer {
     @Autowired private AbsenceRepository absenceRepository;
     @Autowired private SessionsCoursRepository sessionCoursRepository;
     @Autowired private CoursRepository coursRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
+//    @Autowired private PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void init() {
@@ -49,7 +49,8 @@ public class DataInitializer {
             u.setNom("Nom" + i);
             u.setPrenom("Prenom" + i);
             u.setLogin("login" + i);
-            u.setMotDePasse(passwordEncoder.encode("pass" + i));
+//            u.setMotDePasse(passwordEncoder.encode("pass" + i));
+            u.setMotDePasse("pass"+i);
             u.setPhoto("absent.img");
             u.setRole(i <= 3 ? Role.ETUDIANT : Role.VIGILE);
             utilisateurs.add(u);
