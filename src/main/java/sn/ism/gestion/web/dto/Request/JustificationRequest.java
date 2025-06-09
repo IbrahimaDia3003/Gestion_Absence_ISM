@@ -27,9 +27,12 @@ public class JustificationRequest {
     @NotBlank(message = "Le statut est requis")
     private StatutJustification statut=StatutJustification.EN_ATTENTE ;
 
+    private String absenceId;
 
-    public Justification toJustification() {
+    public Justification toJustification()
+    {
         Justification justification = new Justification();
+        justification.setAbsenceId(absenceId);
         justification.setCommentaire(commentaire);
         justification.setFichierUrl(fichierUrl);
         justification.setStatut(statut);

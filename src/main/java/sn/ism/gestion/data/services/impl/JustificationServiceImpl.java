@@ -64,6 +64,12 @@ public class JustificationServiceImpl implements IJustificationService {
     }
 
     @Override
+    public Justification findJustificationByAbsenceId(String id)
+    {
+       return justificationRepository.findJustificationByAbsenceId(id);
+    }
+
+    @Override
     public Justification update(String id, Justification object) {
         return null;
     }

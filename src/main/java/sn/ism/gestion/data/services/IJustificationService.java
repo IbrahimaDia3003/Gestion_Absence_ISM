@@ -8,5 +8,6 @@ import sn.ism.gestion.web.dto.Request.JustificationValidationRequest;
 public interface IJustificationService extends Service<Justification> {
     Justification createJustication(JustificationRequest justificationRequest);
     Justification traiterJustication(String absenceId , JustificationValidationRequest justificationRequest);
+    Justification findJustificationByAbsenceId(String absenceId);
 
 }

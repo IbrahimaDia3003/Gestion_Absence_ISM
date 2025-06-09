@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/justifications")
 @CrossOrigin(origins = "http://localhost:4200")
 public class JustificationControllerImpl implements IJustificationController {
 
@@ -45,6 +44,20 @@ public class JustificationControllerImpl implements IJustificationController {
         Justification entityJustification = justificationMapper.toEntity(justification);
 
         return new ResponseEntity<>(RestResponse.response(HttpStatus.CREATED, entityJustification, "JustificationCreate"), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> SelecteJustifiactionByAbsenceId(String absenceId)
+    {
+        var justifications = justificationService.findJustificationByAbsenceId(absenceId);
+        if (justifications == null)
+            return new ResponseEntity<>(
+                    RestResponse.response(HttpStatus.NOT_FOUND, "No justifications found for the given absence ID", "JustificationNotFound"),
+                    HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(
+                RestResponse.response(HttpStatus.OK, justificationMapper.toDto(justifications), "JustificationByAbsenceId"),
+                HttpStatus.OK);
     }
 
     @Override
