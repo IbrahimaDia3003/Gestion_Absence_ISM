@@ -176,6 +176,7 @@ public class AbsenceServiceImpl implements IAbsenceService {
 
         return absences.map(a -> {
             AbsenceAllResponse dto = new AbsenceAllResponse();
+            dto.setId(a.getId());
             dto.setType(a.getType());
             dto.setSessionId(a.getSessionId());
             dto.setJustifiee(a.isJustifiee());
