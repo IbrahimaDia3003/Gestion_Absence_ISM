@@ -1,7 +1,7 @@
 package sn.ism.gestion.web.dto.Response;
 
 
-import sn.ism.gestion.data.entities.Admin;
+import sn.ism.gestion.Security.DTO.Response.UtilisateurSimpleResponse;
 import lombok.Getter;
 import lombok.Setter;
 @Getter

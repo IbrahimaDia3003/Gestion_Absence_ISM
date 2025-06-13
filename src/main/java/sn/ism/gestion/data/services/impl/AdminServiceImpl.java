@@ -89,11 +89,6 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     @Override
-    public Page<Admin> findAll(Pageable pageable) {
-        return adminRepository.findAll(pageable);
-    }
-
-    @Override
     public Page<Absence> getAllAbsences(Pageable pageable) {
         return absenceRepository.findAll(pageable);
     }

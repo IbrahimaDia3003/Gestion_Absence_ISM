@@ -1,5 +1,6 @@
 package sn.ism.gestion.web.dto.Request;
 
+import sn.ism.gestion.Security.DTO.Request.UtilisateurCreateRequest;
 import sn.ism.gestion.data.entities.Etudiant;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

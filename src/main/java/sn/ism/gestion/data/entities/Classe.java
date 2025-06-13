@@ -17,5 +17,4 @@ public class Classe extends AbstractEntity
     private String filiereId;
     private String anneeScolaireId;
     private List<String> etudiantIds;
-
 }

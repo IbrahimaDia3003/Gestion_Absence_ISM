@@ -5,5 +5,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface JustificationRepository extends MongoRepository<Justification, String>
 {
-    Justification findJustificationByAbsenceId(String absenceId);
+    Justification findByAbsenceId(String absenceId);
 }

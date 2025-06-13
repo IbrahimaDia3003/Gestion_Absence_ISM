@@ -16,9 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class JustificationRequest {
 
-//    @NotBlank(message = "L'identifiant de l'absence est requis")
-//    private String absenceId;
-
     @NotBlank(message = "Le commentaire est requis")
     private String commentaire;
 

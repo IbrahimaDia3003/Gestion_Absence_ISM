@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -20,8 +21,8 @@ public class AbsenceSimpleResponse
     // Informations sur la session de cours
     private String sessionId;
     private LocalDate sessionDate;
-    private LocalDateTime heureDebut;
-    private LocalDateTime heureFin;
+    private LocalTime heureDebut;
+    private LocalTime heureFin;
     // Informations sur l’étudiant
     private String nomEtudiant;
     private String prenomEtudiant;

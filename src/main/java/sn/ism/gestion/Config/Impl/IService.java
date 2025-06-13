@@ -51,8 +51,8 @@ public abstract class IService<T, R extends MongoRepository<T, String>> implemen
         return repository.findAll();
     }
 
-    @Override
-    public Page<T> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
+//    @Override
+//    public Page<T> findAll(Pageable pageable) {
+//        return repository.findAll(pageable);
+//    }
 }

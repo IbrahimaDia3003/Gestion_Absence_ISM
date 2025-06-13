@@ -12,6 +12,6 @@ public interface Service<T> {
     boolean delete(String id); 
     T findById(String id);
     List<T> findAll();
-    Page<T> findAll(Pageable pageable);
+//    Page<T> findAll(Pageable pageable);
 
 }

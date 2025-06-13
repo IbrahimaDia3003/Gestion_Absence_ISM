@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import sn.ism.gestion.data.enums.StatutJustification;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,5 +16,5 @@ public class JusitficationAllResponse
     private String classeEtudiant;
     private String commentaire;
     private StatutJustification statut;
-    private LocalDateTime dateSoumission;
+    private LocalDate dateSoumission;
 }

@@ -1,32 +1,22 @@
 package sn.ism.gestion.data.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
-import sn.ism.gestion.data.entities.Absence;
-import sn.ism.gestion.data.entities.Justification;
+import sn.ism.gestion.data.entities.*;
 import sn.ism.gestion.data.enums.StatutJustification;
-import sn.ism.gestion.data.repositories.AbsenceRepository;
-import sn.ism.gestion.data.repositories.JustificationRepository;
-import sn.ism.gestion.data.services.IAbsenceService;
+import sn.ism.gestion.data.repositories.*;
 import sn.ism.gestion.data.services.IJustificationService;
 import sn.ism.gestion.utils.exceptions.EntityNotFoundExecption;
-import sn.ism.gestion.utils.mapper.JustificationMapper;
-import sn.ism.gestion.web.dto.Request.JustificationRequest;
 import sn.ism.gestion.web.dto.Request.JustificationValidationRequest;
-import sn.ism.gestion.web.dto.Response.AbsenceAllResponse;
 import sn.ism.gestion.web.dto.Response.JusitficationAllResponse;
+import sn.ism.gestion.web.dto.Response.JustificationSimpleResponse;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class JustificationServiceImpl implements IJustificationService {
+public  class JustificationServiceImpl implements IJustificationService
+{
 
 
     @Autowired
@@ -34,29 +24,31 @@ public class JustificationServiceImpl implements IJustificationService {
 
     @Autowired
     private JustificationRepository justificationRepository;
+    
+    @Autowired
+    private EtudiantRepository etudiantRepository;
+    
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
 
     @Autowired
-    private JustificationMapper justificationMapper;
+    private SessionsCoursRepository sessionCoursRepository;
 
+    
     @Autowired
-    IAbsenceService absenceService;
-
+    private ClasseRepository classeRepository;
 
 
     @Override
-    public Justification create(Justification object) {
+    public Justification create(Justification object)
+    {
         return justificationRepository.save(object);
-
     }
 
     @Override
-    public Justification createJustication(JustificationRequest justificationRequest) {
-//        var existingAbsence = absenceRepository.findById(justificationRequest.getAbsenceId())
-//                .orElseThrow(()-> new RuntimeException("Etudiant not found ou id baxxoul"));
-//
-        Justification justificationCreate = justificationMapper.toEntityR(justificationRequest);
-//        justificationCreate.setAbsenceId(existingAbsence.getId());
-        return justificationRepository.save(justificationCreate);
+    public Justification createJustication(Justification justification)
+    {
+        return justificationRepository.save(justification);
     }
 
     @Override
@@ -74,112 +66,13 @@ public class JustificationServiceImpl implements IJustificationService {
         return justificationRepository.save(justification);
     }
 
+
     @Override
-    public Page<JusitficationAllResponse> findAllWith(Pageable pageable)
+    public Justification update(String id, Justification object)
     {
-        // Récupérer la page d'absences
-        Page<AbsenceAllResponse> allAbsences = absenceService.getAllAbsences(pageable);
-        List<AbsenceAllResponse> absences = allAbsences.getContent();
-        var justifications = justificationRepository.findAll();
-        var absencesAll = absenceRepository.findAll();
-
-        List<AbsenceAllResponse> absenceList = absencesAll.stream()
-                .map(absence -> absences.stream()
-                        .filter(a -> Objects.equals(a.getId(), absence.getId())
-                                && !absence.getJustificationId().isEmpty())
-                        .findFirst()
-                        .orElse(null))
-                .toList();
-
-
-
-
-        List<JusitficationAllResponse> responseList = absenceList.stream()
-                .map(absence -> {
-                    JusitficationAllResponse jusitficationAllResponse = new JusitficationAllResponse();
-
-                    if (absence != null)
-                    {
-
-                        Justification justification = justifications.stream()
-                                .filter(j -> Objects.equals(j.getAbsenceId(), absence.getId()))
-                                .findFirst()
-                                .orElse(null);
-
-                        if (justification != null) {
-                            jusitficationAllResponse.setId(justification.getId());
-                            jusitficationAllResponse.setNomCompletEtudiant(absence.getNonEtudiant());
-                            jusitficationAllResponse.setClasseEtudiant(absence.getClasseEtudiant());
-                            jusitficationAllResponse.setStatut(justification.getStatut());
-                            jusitficationAllResponse.setDateSoumission(justification.getDateSoumission());
-                            jusitficationAllResponse.setCommentaire(justification.getCommentaire());
-//                        } else {
-//                            jusitficationAllResponse.setStatut(StatutJustification.EN_ATTENTE);
-                        }
-                    }
-                    else {
-                        return null;
-                    }
-
-
-                    return jusitficationAllResponse;
-                })
-                .collect(Collectors.toList());
-
-
-        // Retourner une page avec les résultats
-        return new PageImpl<>(responseList, pageable, allAbsences.getTotalElements());
-    }
-
-//    @Override
-//    public Page<JusitficationAllResponse> findAllWith(Pageable pageable)
-//    {
-//        var allAbsences = absenceService.getAllAbsences(pageable);
-//        var justifications = justificationRepository.findAll(pageable);
-//
-//         var responseStream = allAbsences.getContent().stream().map(absence ->
-//         {
-//             JusitficationAllResponse jusitficationAllResponse = new JusitficationAllResponse();
-//
-//             justifications.stream().map(
-//                justification ->
-//                    {
-//                        justification.getAbsenceId().equals(absence.getId());
-//
-//
-//                        jusitficationAllResponse.setId(absence.getId());
-//                        jusitficationAllResponse.setStatut(justification.getStatut());
-//                        jusitficationAllResponse.setNomCompletEtudiant(absence.getNonEtudiant());
-//                        jusitficationAllResponse.setDateSoumission(justification.getDateSoumission());
-//                        jusitficationAllResponse.setCommentaire(justification.getCommentaire());
-//                        jusitficationAllResponse.setClasseEtudiant(absence.getClasseEtudiant());
-//                        jusitficationAllResponse.setCommentaire(justification.getCommentaire());
-//
-//                        return jusitficationAllResponse;
-//
-//                    });
-//            return absence;
-//        });
-//
-//
-//
-//        return (Page<JusitficationAllResponse>) responseStream;
-//
-//
-//
-//    }
-
-    @Override
-    public Justification update(String id, Justification object) {
         return null;
     }
 
-
-    @Override
-    public Page<Justification> findAll(Pageable pageable) {
-
-        return justificationRepository.findAll(pageable);
-    }
 
     @Override
     public boolean delete(String id) {
@@ -191,25 +84,89 @@ public class JustificationServiceImpl implements IJustificationService {
     }
 
     @Override
-    public Justification findById(String id) {
+    public Justification findById(String id)
+    {
         return justificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Justification non trouvée avec ID : " + id));
+                .orElseThrow(() -> new RuntimeException("Justification non trouvée"));
     }
 
     @Override
-    public List<Justification> findAll() {
-        return justificationRepository.findAll();
-    }
-
-    @Override
-    public Justification findJustificationByAbsenceId(String absenceId)
+    public JustificationSimpleResponse findByIdWitt(String id)
     {
-        return justificationRepository.findJustificationByAbsenceId(absenceId);
+
+        Justification justification = justificationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Aucune justification"));
+
+        Absence absence = absenceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Aucun Absence trouvé"));
+
+        Etudiant etudiant = etudiantRepository.findById(absence.getEtudiantId())
+                .orElseThrow(() -> new RuntimeException("Étudiant introuvable"));
+
+        Utilisateur utilisateur = utilisateurRepository.findById(etudiant.getUtilisateurId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur de l'étudiant introuvable"));
+
+        Classe classe = classeRepository.findById(etudiant.getClasseId())
+                .orElseThrow(() -> new RuntimeException("Classe de l'étudiant introuvable"));
+
+        SessionCours session = sessionCoursRepository.findById(absence.getSessionId()).orElse(null);
+
+        JustificationSimpleResponse dto = new JustificationSimpleResponse();
+        dto.setAbsenceId(absence.getId());
+        dto.setCommentaire(justification.getCommentaire());
+        dto.setDateSoumission(justification.getDateSoumission());
+        dto.setFichierUrl(justification.getFichierUrl());
+        dto.setStatut(justification.getStatut());
+        dto.setNomCompletEtudiant(utilisateur.getPrenom()+" "+utilisateur.getNom());
+        dto.setClasseEtudiant(classe.getLibelle());
+
+        return dto;
     }
 
     @Override
-    public Optional<Justification> findJustificationById(String id)
+    public List<Justification> findAll()
     {
-        return justificationRepository.findById(id);
+        return List.of();
+    }
+
+    @Override
+    public List<JusitficationAllResponse> findAllResponse()
+    {
+
+        var justifications = justificationRepository.findAll();
+        if (justifications.isEmpty()) 
+            return null ;
+        
+        return justifications.stream().map(
+          justification -> {
+              JusitficationAllResponse justificationResponse = new JusitficationAllResponse();
+              
+              
+              Etudiant etudiantOpt = etudiantRepository.findEtudiantByAbsenceIdsContaining(justification.getAbsenceId());
+                if (etudiantOpt != null) 
+                {
+                    justificationResponse.setId(justification.getId());
+                    justificationResponse.setCommentaire(justification.getCommentaire());
+                    justificationResponse.setStatut(justification.getStatut());
+                    justificationResponse.setDateSoumission(justification.getDateSoumission());
+                    justificationResponse.setClasseEtudiant(etudiantOpt.getUtilisateurId());
+                    
+                    etudiantRepository.findById(etudiantOpt.getId()).ifPresent(e -> {
+                        utilisateurRepository.findById(e.getUtilisateurId()).ifPresent(u -> {
+                            justificationResponse.setNomCompletEtudiant(u.getPrenom() + " " + u.getNom());
+                        });
+                        classeRepository.findById(e.getClasseId()).ifPresent(c -> {
+                            justificationResponse.setClasseEtudiant(c.getLibelle());
+                        });
+                    });
+                    
+                }else {
+                    return null;
+                }
+                
+                return justificationResponse;
+                            
+          }).toList();
+
     }
 }

@@ -1,9 +1,11 @@
 package sn.ism.gestion.data.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import lombok.Getter;
@@ -16,12 +18,15 @@ import sn.ism.gestion.data.enums.ModeCours;
 public class SessionCours extends AbstractEntity {
 
     private String coursId;
-    private LocalDate date;
-    private LocalDateTime heureDebut;
-    private LocalDateTime heureFin;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate dateSession;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime heureDebut;
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime heureFin;
     private int nombreHeures;
     private ModeCours mode;
     private String classeId;
     private boolean valide;
-//    private List<String> ettudiantIds;
+    private String salleId;
 }

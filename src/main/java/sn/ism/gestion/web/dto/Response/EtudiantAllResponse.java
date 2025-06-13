@@ -14,7 +14,7 @@ public class EtudiantAllResponse {
     private String id;
     private String nom;
     private String prenom;
-    private String classeId;
+    private String classeLibelle;
     private String matricule;
     private String telephone;
 

@@ -8,14 +8,16 @@ import sn.ism.gestion.web.dto.Request.AbsenceRequest;
 import sn.ism.gestion.web.dto.Response.AbsenceAllResponse;
 import sn.ism.gestion.web.dto.Response.AbsenceSimpleResponse;
 
+import java.util.List;
 
-public interface IAbsenceService extends Service<Absence> {
+
+public interface IAbsenceService extends Service<Absence>
+{
 
     Absence pointerEtudiantByMatricule(String sessionId, String matricule);
     Absence pointerEtudiant(String sessionId, String etudiantId);
     Absence createAbsence(AbsenceRequest object);
     AbsenceSimpleResponse getOne(String id);
-    Page<AbsenceAllResponse> getAllAbsences(Pageable pageable);
-    Page<AbsenceAllResponse> getAbsenceBySessionId(String sessionId, Pageable pageable);
-
+    List<AbsenceAllResponse> getAllAbsences();
+    List<Absence> getAbsencebySessionId(String sessionId);
 }

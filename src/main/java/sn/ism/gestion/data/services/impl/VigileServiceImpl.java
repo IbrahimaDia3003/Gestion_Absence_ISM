@@ -92,12 +92,6 @@ public class VigileServiceImpl implements IVigileService {
         return vigileRepository.findAll();
     }
 
-    @Override
-    public Page<Vigile> findAll(Pageable pageable) {
-        return vigileRepository.findAll(pageable);
-    }
-
-
 
    @Override
     public Page<VigileAllResponse> getAllVigiles(Pageable pageable) {

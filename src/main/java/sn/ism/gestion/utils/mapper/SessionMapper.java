@@ -2,18 +2,18 @@ package sn.ism.gestion.utils.mapper;
 
 import org.mapstruct.Mapper;
 import sn.ism.gestion.data.entities.SessionCours;
-import sn.ism.gestion.data.entities.Utilisateur;
-import sn.ism.gestion.web.dto.Request.UtilisateurCreateRequest;
+import sn.ism.gestion.mobile.dto.Response.SessionAllMobileResponse;
+import sn.ism.gestion.mobile.dto.Response.SessionSimpleMobileResponse;
 import sn.ism.gestion.web.dto.Response.SessionAllResponse;
 import sn.ism.gestion.web.dto.Response.SessionSimpleResponse;
-import sn.ism.gestion.web.dto.Response.UtilisateurSimpleResponse;
 
 @Mapper(componentModel = "spring")
 public interface SessionMapper {
 
-    SessionAllResponse toDto(SessionAllResponse sessionCours);
+    SessionAllResponse toDto(SessionCours sessionCours);
 
-    SessionAllResponse toDtoAll(SessionCours sessionCours);
+    SessionAllMobileResponse toDtoMobile(SessionCours sessionCours);
+    SessionSimpleResponse toDtoMobileS(SessionCours sessionCours);
 
     SessionCours toEntity(SessionCours sessionCours);
 

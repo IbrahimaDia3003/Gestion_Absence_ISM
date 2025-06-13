@@ -12,9 +12,12 @@ import java.util.Optional;
 
 public interface AbsenceRepository extends MongoRepository<Absence, String>{
 
-   Page<Absence> findByEtudiantIdAndType(String etudiantId, Situation type, Pageable pageable);
-   Optional<Absence> findOneBySessionIdAndEtudiantId(String sessionId, String etudiantId);
-   List<Absence> findAbsenceByEtudiantIdAndType(String etudiantId, Situation type);
-   Page<Absence> findAbsenceBySessionId(String sessionId, Pageable pageable);
+//   Page<Absence> findByEtudiantIdAndType(String etudiantId, Situation type, Pageable pageable);
+    Optional<Absence> findOneBySessionIdAndEtudiantId(String sessionId, String etudiantId);
+    List<Absence> findAbsenceByEtudiantIdAndType(String etudiantId, Situation type);
+
+    List<Absence> findAbsenceByEtudiantId(String etudiantId);
+
+    List<Absence> findAbsenceBySessionId(String sessionId);
 
 }
