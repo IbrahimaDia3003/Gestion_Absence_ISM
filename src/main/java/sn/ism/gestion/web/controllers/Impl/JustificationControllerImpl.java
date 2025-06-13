@@ -63,9 +63,9 @@ public class JustificationControllerImpl implements IJustificationController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Justification> response = justificationService.findAll(pageable);
+        Page<Justification> responseJustif = justificationService.findAll(pageable);
 //        Page<JusitficationAllResponse> response = justificationService.findAllWith(pageable);
-//        Page<JustificationSimpleResponse> response = justifications.map(justificationMapper::toDto);
+        Page<JustificationSimpleResponse> response = responseJustif.map(justificationMapper::toDto);
         return new ResponseEntity<>(
                 RestResponse.responsePaginate(
                         HttpStatus.OK,
@@ -83,8 +83,8 @@ public class JustificationControllerImpl implements IJustificationController {
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> SelectdById(@PathVariable String id) {
         var justification = justificationService.findJustificationById(id);
-//        var justificationDto = justificationMapper.toDto(justification);
-        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,justification, "justificationSimpleResponse"),
+        var justificationSimpleResponse = justificationMapper.toDto(justification);
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,justificationSimpleResponse, "justificationSimpleResponse"),
                 HttpStatus.OK);
     }
 
