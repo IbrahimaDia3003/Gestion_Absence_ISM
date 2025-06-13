@@ -73,7 +73,7 @@ public class JustificationControllerImpl implements IJustificationController {
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectdById(@PathVariable String id) {
-        var justification = justificationService.findById(id);
+        var justification = justificationService.findJustificationById(id);
         var justificationDto = justificationMapper.toDto(justification);
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,justificationDto, "justificationSimpleResponse"),
                 HttpStatus.OK);
@@ -94,5 +94,13 @@ public class JustificationControllerImpl implements IJustificationController {
                 RestResponse.response(HttpStatus.ACCEPTED, justification, "JustificationUpdate"),
                 HttpStatus.ACCEPTED);
     }
+    @Override
+    public ResponseEntity<Map<String, Object>> SelectByAbsenceId(String idAbsence)
+    {
+        Justification justification = justificationService.findJustificationByAbsenceId(idAbsence);
 
+        return new ResponseEntity<>(
+                RestResponse.response(HttpStatus.OK, justification, "JustificationByAbsenceId"),
+                HttpStatus.OK);
+    }
 }
