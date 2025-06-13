@@ -15,7 +15,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/web/vigiles")
-public interface IVigileWebController extends Controller<Vigile> {
+public interface IVigileWebController extends Controller<Vigile>
+{
 
     @PostMapping("")
     ResponseEntity<Map<String, Object>> Create(@Valid @RequestBody VigileSimpleRequest request,

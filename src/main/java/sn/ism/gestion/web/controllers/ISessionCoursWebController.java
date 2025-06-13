@@ -23,4 +23,11 @@ public interface ISessionCoursWebController {
                     @RequestParam(defaultValue = "0") int page,
                     @RequestParam(defaultValue = "10") int size
     );
+    @GetMapping("/{sessionId}/Absences")
+    ResponseEntity<Map<String,Object>> findAbsencesBySessionId(
+                    @PathVariable String sessionId,
+                    @RequestParam(defaultValue = "0") int page,
+                    @RequestParam(defaultValue = "10") int size
+    );
+
 }

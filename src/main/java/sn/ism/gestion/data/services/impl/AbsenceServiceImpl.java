@@ -145,7 +145,8 @@ public class AbsenceServiceImpl implements IAbsenceService {
     }
 
     @Override
-    public List<Absence> findAll() {
+    public List<Absence> findAll()
+    {
         return absenceRepository.findAll();
     }
 
@@ -173,10 +174,51 @@ public class AbsenceServiceImpl implements IAbsenceService {
     }
 
     @Override
-    public List<Absence> getAbsencebySessionId(String sessionId)
+    public List<AbsenceSimpleResponse> getAbsencebySessionId(String sessionId)
     {
-        if (sessionCoursRepository.existsById(sessionId))
-            return absenceRepository.findAbsenceBySessionId(sessionId);
+        if (!sessionCoursRepository.existsById(sessionId))
+            return null;
+
+        List<Absence> absences=  absenceRepository.findAbsenceBySessionId(sessionId);
+
+        if (!absences.isEmpty())
+        {
+           var AbsenceWithSession =  absences.stream().map(
+                    absence -> {
+
+                        Etudiant etudiant = etudiantRepository.findById(absence.getEtudiantId())
+                                .orElseThrow(() -> new RuntimeException("Étudiant introuvable"));
+
+                        Utilisateur utilisateur = utilisateurRepository.findById(etudiant.getUtilisateurId())
+                                .orElseThrow(() -> new RuntimeException("Utilisateur de l'étudiant introuvable"));
+
+                        SessionCours session = sessionCoursRepository.findById(absence.getSessionId()).orElse(null);
+
+                        AbsenceSimpleResponse dto = new AbsenceSimpleResponse();
+                        dto.setId(absence.getId());
+                        dto.setType(absence.getType());
+                        dto.setJustifiee(absence.isJustifiee());
+                        dto.setJustificationId(absence.getJustificationId());
+
+                        classeRepository.findById(etudiant.getClasseId()).ifPresent(c -> {
+                            dto.setClasseEtudiant(c.getLibelle());
+                        });
+                        dto.setSessionId(absence.getSessionId());
+
+                        dto.setNomEtudiant(utilisateur.getNom());
+                        dto.setPrenomEtudiant(utilisateur.getPrenom());
+                        if (session != null) {
+                            dto.setSessionDate(session.getDateSession());
+                            dto.setHeureDebut(session.getHeureDebut());
+                            dto.setHeureFin(session.getHeureFin());
+                        }
+
+                        return dto;
+                    }
+
+            ).toList();
+            return AbsenceWithSession;
+        }
         return null;
     }
 

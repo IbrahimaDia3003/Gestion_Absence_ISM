@@ -35,4 +35,6 @@ public interface IAbsenceWebController extends Controller<Absence> {
     @GetMapping("/{id}/details")
     ResponseEntity<Map<String,Object>> findByDetailsId(@PathVariable String id);
 
+
+
 }
