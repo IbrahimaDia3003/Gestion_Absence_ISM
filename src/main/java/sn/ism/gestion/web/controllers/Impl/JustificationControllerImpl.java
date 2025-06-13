@@ -49,11 +49,22 @@ public class JustificationControllerImpl implements IJustificationController {
     }
 
     @Override
+    public ResponseEntity<Map<String, Object>> SelectByAbsenceId(String idAbsence)
+    {
+        Justification justification = justificationService.findJustificationByAbsenceId(idAbsence);
+
+        return new ResponseEntity<>(
+                RestResponse.response(HttpStatus.OK, justification, "JustificationByAbsenceId"),
+                HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Map<String, Object>> SelectAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<JusitficationAllResponse> response = justificationService.findAllWith(pageable);
+        Page<Justification> response = justificationService.findAll(pageable);
+//        Page<JusitficationAllResponse> response = justificationService.findAllWith(pageable);
 //        Page<JustificationSimpleResponse> response = justifications.map(justificationMapper::toDto);
         return new ResponseEntity<>(
                 RestResponse.responsePaginate(
@@ -71,9 +82,9 @@ public class JustificationControllerImpl implements IJustificationController {
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> SelectdById(@PathVariable String id) {
-        var justification = justificationService.findById(id);
-        var justificationDto = justificationMapper.toDto(justification);
-        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,justificationDto, "justificationSimpleResponse"),
+        var justification = justificationService.findJustificationById(id);
+//        var justificationDto = justificationMapper.toDto(justification);
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,justification, "justificationSimpleResponse"),
                 HttpStatus.OK);
     }
 
