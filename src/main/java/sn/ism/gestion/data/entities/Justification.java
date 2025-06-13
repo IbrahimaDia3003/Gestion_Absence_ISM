@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Document(collection = "justifications")
-public class Justification extends AbstractEntity
-{
+public class Justification extends AbstractEntity {
     private String absenceId;
     private String commentaire;
     private String fichierUrl;

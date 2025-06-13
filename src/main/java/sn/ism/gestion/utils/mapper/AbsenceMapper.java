@@ -11,6 +11,8 @@ public interface AbsenceMapper {
 
     AbsenceAllResponse toDto(AbsenceAllResponse absence);
 
+    AbsenceAllResponse toDtoAllAB(Absence absence);
+
     AbsenceSimpleResponse toDtoAll(AbsenceSimpleResponse etudiant);
 
     Absence toEntity(Absence request);

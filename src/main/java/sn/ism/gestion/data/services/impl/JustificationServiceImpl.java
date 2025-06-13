@@ -2,6 +2,7 @@ package sn.ism.gestion.data.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sn.ism.gestion.data.entities.Absence;
@@ -9,13 +10,18 @@ import sn.ism.gestion.data.entities.Justification;
 import sn.ism.gestion.data.enums.StatutJustification;
 import sn.ism.gestion.data.repositories.AbsenceRepository;
 import sn.ism.gestion.data.repositories.JustificationRepository;
+import sn.ism.gestion.data.services.IAbsenceService;
 import sn.ism.gestion.data.services.IJustificationService;
 import sn.ism.gestion.utils.exceptions.EntityNotFoundExecption;
 import sn.ism.gestion.utils.mapper.JustificationMapper;
 import sn.ism.gestion.web.dto.Request.JustificationRequest;
 import sn.ism.gestion.web.dto.Request.JustificationValidationRequest;
+import sn.ism.gestion.web.dto.Response.AbsenceAllResponse;
+import sn.ism.gestion.web.dto.Response.JusitficationAllResponse;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class JustificationServiceImpl implements IJustificationService {
@@ -29,6 +35,9 @@ public class JustificationServiceImpl implements IJustificationService {
 
     @Autowired
     private JustificationMapper justificationMapper;
+
+    @Autowired
+    IAbsenceService absenceService;
 
 
 
@@ -64,10 +73,73 @@ public class JustificationServiceImpl implements IJustificationService {
     }
 
     @Override
-    public Justification findJustificationByAbsenceId(String id)
+    public Page<JusitficationAllResponse> findAllWith(Pageable pageable)
     {
-       return justificationRepository.findJustificationByAbsenceId(id);
+        Page<AbsenceAllResponse> allAbsences = absenceService.getAllAbsences(pageable);
+        List<AbsenceAllResponse> absences = allAbsences.getContent();
+
+        List<Justification> justifications = justificationRepository.findAll(); // méthode à ajouter
+        Map<String, Justification> justificationMap = justifications.stream()
+                .collect(Collectors.toMap(Justification::getAbsenceId, j -> j));
+
+        List<JusitficationAllResponse> responseList = absences.stream()
+                .map(absence -> {
+                    JusitficationAllResponse response = new JusitficationAllResponse();
+                    response.setId(absence.getId());
+                    response.setNomCompletEtudiant(absence.getNonEtudiant());
+                    response.setClasseEtudiant(absence.getClasseEtudiant());
+
+                    Justification justification = justificationMap.get(absence.getId());
+                    if (justification != null) {
+                        response.setStatut(justification.getStatut());
+                        response.setDateSoumission(justification.getDateSoumission());
+                        response.setCommentaire(justification.getCommentaire());
+                    }
+
+                    return response;
+                })
+                .toList();
+
+        return new PageImpl<>(responseList, pageable, allAbsences.getTotalElements());
     }
+
+//    @Override
+//    public Page<JusitficationAllResponse> findAllWith(Pageable pageable)
+//    {
+//        var allAbsences = absenceService.getAllAbsences(pageable);
+//        var justifications = justificationRepository.findAll(pageable);
+//
+//         var responseStream = allAbsences.getContent().stream().map(absence ->
+//         {
+//             JusitficationAllResponse jusitficationAllResponse = new JusitficationAllResponse();
+//
+//             justifications.stream().map(
+//                justification ->
+//                    {
+//                        justification.getAbsenceId().equals(absence.getId());
+//
+//
+//                        jusitficationAllResponse.setId(absence.getId());
+//                        jusitficationAllResponse.setStatut(justification.getStatut());
+//                        jusitficationAllResponse.setNomCompletEtudiant(absence.getNonEtudiant());
+//                        jusitficationAllResponse.setDateSoumission(justification.getDateSoumission());
+//                        jusitficationAllResponse.setCommentaire(justification.getCommentaire());
+//                        jusitficationAllResponse.setClasseEtudiant(absence.getClasseEtudiant());
+//                        jusitficationAllResponse.setCommentaire(justification.getCommentaire());
+//
+//                        return jusitficationAllResponse;
+//
+//                    });
+//            return absence;
+//        });
+//
+//
+//
+//        return (Page<JusitficationAllResponse>) responseStream;
+//
+//
+//
+//    }
 
     @Override
     public Justification update(String id, Justification object) {
@@ -77,6 +149,7 @@ public class JustificationServiceImpl implements IJustificationService {
 
     @Override
     public Page<Justification> findAll(Pageable pageable) {
+
         return justificationRepository.findAll(pageable);
     }
 

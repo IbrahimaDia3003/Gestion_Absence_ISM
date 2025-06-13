@@ -13,6 +13,8 @@ public interface SessionMapper {
 
     SessionAllResponse toDto(SessionAllResponse sessionCours);
 
+    SessionAllResponse toDtoAll(SessionCours sessionCours);
+
     SessionCours toEntity(SessionCours sessionCours);
 
 }

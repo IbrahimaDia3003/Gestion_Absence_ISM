@@ -11,7 +11,8 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Document(collection = "absences")
-public class Absence extends AbstractEntity {
+public class Absence extends AbstractEntity
+{
 
     private String etudiantId;
     private String sessionId;
@@ -19,6 +20,4 @@ public class Absence extends AbstractEntity {
     private boolean justifiee;
     private String justificationId;
     private LocalTime heurePointage;
-
-    
 }

@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import sn.ism.gestion.data.entities.Etudiant;
 import sn.ism.gestion.data.entities.Justification;
 import sn.ism.gestion.web.dto.Request.JustificationRequest;
+import sn.ism.gestion.web.dto.Response.JusitficationAllResponse;
 import sn.ism.gestion.web.dto.Response.JustificationSimpleResponse;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 public interface JustificationMapper {
 
     JustificationSimpleResponse toDto(Justification Justification);
+    JusitficationAllResponse toDtoAll(JusitficationAllResponse etudiant);
 
     Justification toEntity(Justification request);
 

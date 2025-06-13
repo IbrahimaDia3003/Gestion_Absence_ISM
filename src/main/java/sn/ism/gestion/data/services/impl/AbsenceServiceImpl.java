@@ -38,6 +38,8 @@ public class AbsenceServiceImpl implements IAbsenceService {
     private AbsenceMapper absenceMapper;
     @Autowired
     private SessionsCoursRepository sessionCoursRepository;
+    @Autowired
+    private ClasseRepository classeRepository;
 
 
     @Override
@@ -164,8 +166,7 @@ public class AbsenceServiceImpl implements IAbsenceService {
     }
 
     @Override
-    public Page<Absence> findAll(Pageable pageable)
-    {
+    public Page<Absence> findAll(Pageable pageable) {
         return absenceRepository.findAll(pageable);
     }
 
@@ -175,7 +176,6 @@ public class AbsenceServiceImpl implements IAbsenceService {
 
         return absences.map(a -> {
             AbsenceAllResponse dto = new AbsenceAllResponse();
-            dto.setId(a.getId());
             dto.setType(a.getType());
             dto.setSessionId(a.getSessionId());
             dto.setJustifiee(a.isJustifiee());
@@ -186,8 +186,37 @@ public class AbsenceServiceImpl implements IAbsenceService {
                     dto.setNonEtudiant(u.getNom());
                 });
             });
+            classeRepository.findById(a.getEtudiantId()).ifPresent(c -> {
+                dto.setClasseEtudiant(c.getLibelle());
+            });
             return dto;
         });
+    }
+
+    @Override
+    public Page<AbsenceAllResponse> getAbsenceBySessionId(String sessionId, Pageable pageable)
+    {
+        Page<AbsenceAllResponse> absences = absenceRepository.findAbsenceBySessionId(sessionId, pageable)
+                .map(a -> {
+                    AbsenceAllResponse dto = new AbsenceAllResponse();
+                    dto.setId(a.getId());
+                    dto.setType(a.getType());
+//                    dto.setSessionId(a.getSessionId());
+                    dto.setJustifiee(a.isJustifiee());
+
+                    etudiantRepository.findById(a.getEtudiantId()).ifPresent(e -> {
+                        dto.setClasseEtudiant(e.getClasseId());
+                        utilisateurRepository.findById(e.getUtilisateurId()).ifPresent(u -> {
+                            dto.setPrenomEtudiant(u.getPrenom());
+                            dto.setNonEtudiant(u.getNom());
+                        });
+                    });
+                    classeRepository.findById(a.getEtudiantId()).ifPresent(c -> {
+                        dto.setClasseEtudiant(c.getLibelle());
+                    });
+                    return dto;
+                });
+        return absences;
     }
 
     @Override

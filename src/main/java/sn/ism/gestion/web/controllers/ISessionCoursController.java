@@ -10,6 +10,10 @@ import java.util.Map;
 @RequestMapping("/api/sessions")
 public interface ISessionCoursController {
 
+    @GetMapping("")
+    ResponseEntity<Map<String, Object>> getAllSessionCours(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size);
     @GetMapping("/duJour")
     ResponseEntity<Map<String,Object>> getSessionsDuJour(LocalDate date ,
                     @RequestParam(defaultValue = "0") int page,

@@ -1,13 +1,15 @@
 package sn.ism.gestion.data.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import sn.ism.gestion.Config.Service;
 import sn.ism.gestion.data.entities.Justification;
 import sn.ism.gestion.web.dto.Request.JustificationRequest;
 import sn.ism.gestion.web.dto.Request.JustificationValidationRequest;
+import sn.ism.gestion.web.dto.Response.JusitficationAllResponse;
 
 public interface IJustificationService extends Service<Justification> {
     Justification createJustication(JustificationRequest justificationRequest);
     Justification traiterJustication(String absenceId , JustificationValidationRequest justificationRequest);
-    Justification findJustificationByAbsenceId(String absenceId);
-
+    Page<JusitficationAllResponse> findAllWith(Pageable pageable);
 }

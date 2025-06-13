@@ -12,7 +12,6 @@ import sn.ism.gestion.data.entities.*;
 import sn.ism.gestion.data.enums.ModeCours;
 import sn.ism.gestion.data.enums.Role;
 import sn.ism.gestion.data.enums.Situation;
-import sn.ism.gestion.data.enums.StatutJustification;
 import sn.ism.gestion.data.repositories.*;
 
 import java.time.LocalDate;
@@ -29,7 +28,6 @@ public class DataInitializer {
     @Autowired private AbsenceRepository absenceRepository;
     @Autowired private SessionsCoursRepository sessionCoursRepository;
     @Autowired private CoursRepository coursRepository;
-    @Autowired private JustificationRepository justificationRepository;
 //    @Autowired private PasswordEncoder passwordEncoder;
 
     @PostConstruct
@@ -43,7 +41,6 @@ public class DataInitializer {
         classeRepository.deleteAll();
         filiereRepository.deleteAll();
         utilisateurRepository.deleteAll();
-        justificationRepository.deleteAll();
 
         // Utilisateurs
         List<Utilisateur> utilisateurs = new ArrayList<>();
@@ -151,12 +148,11 @@ public class DataInitializer {
             a.setSessionId(sessions.get(i % sessions.size()).getId());
             a.setType(i % 2 == 0 ? Situation.ABSENCE : Situation.RETARD);
             a.setJustifiee(i % 2 == 0);
-//            a.setJustificationId();
+            a.setJustificationId("JUSTIF" + i);
             absences.add(a);
             etudiants.get(i).getAbsenceIds().add(a.getId());
         }
         absenceRepository.saveAll(absences);
-
         for (Etudiant etudiant : etudiants) {
             List<String> ids = absences.stream()
                     .filter(a -> a.getEtudiantId().equals(etudiant.getId()))
@@ -165,29 +161,6 @@ public class DataInitializer {
             etudiant.setAbsenceIds(ids);
         }
         etudiantRepository.saveAll(etudiants);
-
-        List<Justification> justifications = new ArrayList<>();
-        for (int i=0 ; i<=2 ;i++)
-        {
-            Justification justification = new Justification();
-            justification.setAbsenceId(absences.get(i).getId());
-            justification.setCommentaire("daw diangu rek dou dara");
-            justification.setFichierUrl("justification" + i + ".pdf");
-            justification.setStatut(StatutJustification.EN_ATTENTE);
-
-            justifications.add(justification);
-        }
-
-        justificationRepository.saveAll(justifications);
-
-        for (Absence absence : absences) {
-            String id = justifications.stream()
-                    .filter(j -> j.getAbsenceId().equals(absence.getId()))
-                    .map(Justification::getId).toString();
-            absence.setJustificationId(id);
-        }
-        absenceRepository.saveAll(absences);
-
 
         System.out.println("=== Données initialisées avec succès ===");
     }

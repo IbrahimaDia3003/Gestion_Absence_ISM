@@ -17,6 +17,7 @@ import sn.ism.gestion.data.services.IJustificationService;
 import sn.ism.gestion.utils.mapper.JustificationMapper;
 import sn.ism.gestion.web.controllers.IJustificationController;
 import sn.ism.gestion.web.dto.Request.JustificationRequest;
+import sn.ism.gestion.web.dto.Response.JusitficationAllResponse;
 import sn.ism.gestion.web.dto.Response.JustificationSimpleResponse;
 import sn.ism.gestion.web.dto.RestResponse;
 
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("api/justifications")
 @CrossOrigin(origins = "http://localhost:4200")
 public class JustificationControllerImpl implements IJustificationController {
 
@@ -47,26 +49,12 @@ public class JustificationControllerImpl implements IJustificationController {
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> SelecteJustifiactionByAbsenceId(String absenceId)
-    {
-        var justifications = justificationService.findJustificationByAbsenceId(absenceId);
-        if (justifications == null)
-            return new ResponseEntity<>(
-                    RestResponse.response(HttpStatus.NOT_FOUND, "No justifications found for the given absence ID", "JustificationNotFound"),
-                    HttpStatus.NOT_FOUND);
-
-        return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.OK, justificationMapper.toDto(justifications), "JustificationByAbsenceId"),
-                HttpStatus.OK);
-    }
-
-    @Override
     public ResponseEntity<Map<String, Object>> SelectAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Justification> justifications = justificationService.findAll(pageable);
-        Page<JustificationSimpleResponse> response = justifications.map(justificationMapper::toDto);
+        Page<JusitficationAllResponse> response = justificationService.findAllWith(pageable);
+//        Page<JustificationSimpleResponse> response = justifications.map(justificationMapper::toDto);
         return new ResponseEntity<>(
                 RestResponse.responsePaginate(
                         HttpStatus.OK,

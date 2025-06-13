@@ -16,5 +16,6 @@ public interface IAbsenceService extends Service<Absence> {
     Absence createAbsence(AbsenceRequest object);
     AbsenceSimpleResponse getOne(String id);
     Page<AbsenceAllResponse> getAllAbsences(Pageable pageable);
+    Page<AbsenceAllResponse> getAbsenceBySessionId(String sessionId, Pageable pageable);
 
 }

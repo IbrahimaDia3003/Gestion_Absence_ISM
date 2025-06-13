@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sn.ism.gestion.data.entities.SessionCours;
 import sn.ism.gestion.data.services.ISessionCoursService;
 import sn.ism.gestion.utils.mapper.SessionMapper;
 import sn.ism.gestion.web.controllers.ISessionCoursController;
@@ -26,6 +27,25 @@ public class SessionCoursController implements ISessionCoursController {
     private final ISessionCoursService sessionCoursService;
 
     private SessionMapper sessionMapper;
+
+    @Override
+    public ResponseEntity<Map<String, Object>> getAllSessionCours(int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SessionCours> session = sessionCoursService.findAll(pageable);
+        Page<SessionAllResponse> response = session.map(sessionMapper::toDtoAll);
+        return new ResponseEntity<>(
+                RestResponse.responsePaginate(
+                        HttpStatus.OK,
+                        response.getContent(),
+                        response.getNumber(),
+                        response.getTotalPages(),
+                        response.getTotalElements(),
+                        response.isFirst(),
+                        response.isLast(),
+                        "SessionAllSimple"),
+                HttpStatus.OK);
+    }
 
     @Override
     public ResponseEntity<Map<String, Object>> getSessionsDuJour(LocalDate date ,

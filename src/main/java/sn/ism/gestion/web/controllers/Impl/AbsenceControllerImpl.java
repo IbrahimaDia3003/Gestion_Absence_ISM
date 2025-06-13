@@ -24,15 +24,15 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-public class AbsenceControllerImpl implements IAbsenceController
-{
+@RequestMapping("api/absences")
+@CrossOrigin(origins = "http://localhost:4200")
+public class AbsenceControllerImpl implements IAbsenceController {
 
     private final IAbsenceService absenceService;
     private final AbsenceMapper absenceMapper;
 
     @Override
-    public ResponseEntity<Map<String, Object>> Create(AbsenceRequest request, BindingResult bindingResult)
-    {
+    public ResponseEntity<Map<String, Object>> Create(AbsenceRequest request, BindingResult bindingResult) {
 
             if (bindingResult.hasErrors()) {
             Map<String, Object> errors = new HashMap<>();
@@ -44,15 +44,17 @@ public class AbsenceControllerImpl implements IAbsenceController
         Absence absence = absenceService.createAbsence(request);
         Absence entityAbsence = absenceMapper.toEntity(absence);
 
-        return new ResponseEntity<>(RestResponse.response(
-            HttpStatus.CREATED,
-                    entityAbsence,
-                    "CreateRequest"),
+        return new ResponseEntity<>(RestResponse.response(  
+            HttpStatus.CREATED, 
+                    entityAbsence, 
+                    "AbsenceCreateRequest"),
             HttpStatus.CREATED);
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> SelectAll(int page, int size) {
+    public ResponseEntity<Map<String, Object>> SelectAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<AbsenceAllResponse> absences = absenceService.getAllAbsences(pageable);
         Page<AbsenceAllResponse> response = absences.map(absenceMapper::toDto);
@@ -65,30 +67,31 @@ public class AbsenceControllerImpl implements IAbsenceController
                         response.getTotalElements(),
                         response.isFirst(),
                         response.isLast(),
-                        "AbsenceAllResponse"),
+                        "AbsenceAllResponses"),
                 HttpStatus.OK);
     }
 
-//    @Override
-//    public ResponseEntity<?> pointerEtudiantByQRcode(@RequestParam String sessionId, @RequestParam String etudiantId) {
-//        Absence absence = absenceService.pointerEtudiant(sessionId, etudiantId);
-//        return ResponseEntity.ok().body(absence);
-//    }
-//
-//    @Override
-//    public ResponseEntity<?> pointerEtudiantByMatricule(@RequestParam String sessionId, @RequestParam String matricule) {
-//        Absence absence = absenceService.pointerEtudiantByMatricule(sessionId, matricule);
-//        return ResponseEntity.ok().body(absence);
-//    }
+    @Override
+    public ResponseEntity<?> pointerEtudiantByQRcode(@RequestParam String sessionId, @RequestParam String etudiantId) {
+        Absence absence = absenceService.pointerEtudiant(sessionId, etudiantId);
+        return ResponseEntity.ok().body(absence);
+    }
+
+    @Override
+    public ResponseEntity<?> pointerEtudiantByMatricule(@RequestParam String sessionId, @RequestParam String matricule) {
+        Absence absence = absenceService.pointerEtudiantByMatricule(sessionId, matricule);
+        return ResponseEntity.ok().body(absence);
+    }
 
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> SelectdById(String id) {
         var absence = absenceService.getOne(id);
         var absenceDto = absenceMapper.toDtoAll(absence);
-        return new ResponseEntity<>(RestResponse.response(
+        return new ResponseEntity<>(
+                 RestResponse.response(
                         HttpStatus.OK,absenceDto,
-                        "AbsenceSimpleResponse"),
+                        "AbsencesSimpleResponse"),
                 HttpStatus.OK);
     }
 
@@ -118,6 +121,24 @@ public class AbsenceControllerImpl implements IAbsenceController
         return null;
     }
 
-    
+    @Override
+    public ResponseEntity<Map<String, Object>> getAbsenceBySessionId(String sessionId, int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AbsenceAllResponse> absences = absenceService.getAbsenceBySessionId(sessionId, pageable);
+//        Page<AbsenceAllResponse> response = absences.map(absenceMapper::toDtoAllAB);
+        return new ResponseEntity<>
+                (RestResponse.responsePaginate(
+                        HttpStatus.OK,
+                        absences.getContent(),
+                        absences.getNumber(),
+                        absences.getTotalPages(),
+                        absences.getTotalElements(),
+                        absences.isFirst(),
+                        absences.isLast(),
+                        "PointageAllResponses"),
+                HttpStatus.OK);
+    }
+
 
 }
