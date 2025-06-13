@@ -11,14 +11,14 @@ import sn.ism.gestion.web.dto.Request.AbsenceRequest;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/web/pointages")
+@RequestMapping("/api/web/absences")
 public interface IAbsenceWebController extends Controller<Absence> {
 
     @PostMapping("")
     ResponseEntity<Map<String, Object>> Create(@Valid @RequestBody AbsenceRequest request,
                                                BindingResult bindingResult);
 
-    @PostMapping("/pointer")
+    @PostMapping("/absence")
      ResponseEntity<?> pointerEtudiantByQRcode(@RequestParam String sessionId,
                                        @RequestParam String etudiantId);
 

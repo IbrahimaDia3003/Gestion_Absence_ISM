@@ -32,29 +32,6 @@ public class SessionCoursWebController implements ISessionCoursWebController {
     @Autowired
     private SessionMapper sessionMapper;
 
-    @Override
-    public ResponseEntity<Map<String, Object>> getSessionsDuJour(LocalDate date , int page, int size) {
-
-        List<SessionAllResponse> all = sessionCoursService.getAllSessionCours(date);
-
-        int start = Math.min(page * size, all.size());
-        int end = Math.min(start + size, all.size());
-        List<SessionAllResponse> content = all.subList(start, end);
-
-        Page<SessionAllResponse> response = new PageImpl<>(content, PageRequest.of(page, size), all.size());;
-        return new ResponseEntity<>(
-                RestResponse.responsePaginate(
-                        HttpStatus.OK,
-                        response.getContent(),
-                        response.getNumber(),
-                        response.getTotalPages(),
-                        response.getTotalElements(),
-                        response.isFirst(),
-                        response.isLast(),
-                        "SessionAllSimple"),
-                HttpStatus.OK);
-    }
-
 
     @Override
     public ResponseEntity<Map<String, Object>> findById(String id)
@@ -71,6 +48,31 @@ public class SessionCoursWebController implements ISessionCoursWebController {
         return new ResponseEntity<>(
                 RestResponse.response(HttpStatus.OK, response, "SessionSimpleResponse "),
                 HttpStatus.OK);
+
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> findSessionCoursByDateSession(int page, int size)
+    {
+        List<SessionCours> all = sessionCoursService.findSessionCoursByDateSession();
+        int start = Math.min(page * size, all.size());
+        int end = Math.min(start + size, all.size());
+        List<SessionCours> content = all.subList(start, end);
+        // Convert SessionCours to SessionAllResponse
+
+        Page<SessionCours> response = new PageImpl<>(content, PageRequest.of(page, size), all.size());;
+        return
+                new ResponseEntity<>(
+                        RestResponse.responsePaginate(
+                                HttpStatus.OK,
+                                response.getContent(),
+                                response.getNumber(),
+                                response.getTotalPages(),
+                                response.getTotalElements(),
+                                response.isFirst(),
+                                response.isLast(),
+                                "SessionCoursByDateSession"),
+                        HttpStatus.OK);
 
     }
 

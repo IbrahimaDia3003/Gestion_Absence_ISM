@@ -105,6 +105,13 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
 
     }
 
+    @Override
+    public List<SessionCours> findSessionCoursByDateSession()
+    {
+        LocalDate aujourdHui = LocalDate.now();
+       return sessionCoursRepository.findSessionCoursByDateSession(aujourdHui);
+    }
+
 //    @Override
 //    public List<SessionCours> findSessionCoursByEtudiantId(String etudiantId)
 //    {
@@ -113,7 +120,8 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
 //    }
 
     @Override
-    public List<SessionAllResponse> getAllSessionCours(LocalDate date ) {
+    public List<SessionAllResponse> getAllSessionCours(LocalDate date )
+    {
         List<SessionCours> sessions = sessionCoursRepository.findByDate(date);
 
         if (sessions.isEmpty()) {

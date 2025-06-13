@@ -14,4 +14,7 @@ public interface ISessionCoursService extends Service<SessionCours> {
     List<SessionEtudiantQrCodeMobileResponse> getSessionsDuJourWithEtudiant() ;
 //    List<SessionCours> findSessionCoursByEtudiantId(String etudiantId);
 
+    List<SessionCours> findSessionCoursByDateSession();
+
+
 }

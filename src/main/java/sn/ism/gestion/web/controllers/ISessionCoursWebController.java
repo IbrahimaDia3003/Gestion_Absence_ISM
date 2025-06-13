@@ -10,11 +10,17 @@ import java.util.Map;
 @RequestMapping("/api/web/sessions")
 public interface ISessionCoursWebController {
 
-    @GetMapping("/duJour")
-    ResponseEntity<Map<String,Object>> getSessionsDuJour(LocalDate date ,
-                    @RequestParam(defaultValue = "0") int page,
-                    @RequestParam(defaultValue = "10") int size);
+//    @GetMapping("/duJour")
+//    ResponseEntity<Map<String,Object>> getSessionsDuJour(LocalDate date ,
+//                    @RequestParam(defaultValue = "0") int page,
+//                    @RequestParam(defaultValue = "10") int size);
 
     @GetMapping("/{id}")
     ResponseEntity<Map<String,Object>> findById(@PathVariable String id);
+
+    @GetMapping("/duJour")
+    ResponseEntity<Map<String,Object>> findSessionCoursByDateSession(
+                    @RequestParam(defaultValue = "0") int page,
+                    @RequestParam(defaultValue = "10") int size
+    );
 }
