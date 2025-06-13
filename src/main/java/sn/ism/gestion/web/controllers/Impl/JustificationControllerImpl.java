@@ -64,6 +64,11 @@ public class JustificationControllerImpl implements IJustificationController {
             @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Justification> responseJustif = justificationService.findAll(pageable);
+<<<<<<< HEAD
+=======
+        Page<JustificationSimpleResponse> response = responseJustif.map(justificationMapper::toDto);
+
+>>>>>>> fc3dfa5351683357fece5a9d73558b0e70244ce4
 //        Page<JusitficationAllResponse> response = justificationService.findAllWith(pageable);
         Page<JustificationSimpleResponse> response = responseJustif.map(justificationMapper::toDto);
         return new ResponseEntity<>(
