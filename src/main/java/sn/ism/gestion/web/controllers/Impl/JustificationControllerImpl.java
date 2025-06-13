@@ -49,28 +49,15 @@ public class JustificationControllerImpl implements IJustificationController {
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> SelectByAbsenceId(String idAbsence)
-    {
-        Justification justification = justificationService.findJustificationByAbsenceId(idAbsence);
-
-        return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.OK, justification, "JustificationByAbsenceId"),
-                HttpStatus.OK);
-    }
-
-    @Override
     public ResponseEntity<Map<String, Object>> SelectAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Justification> responseJustif = justificationService.findAll(pageable);
-<<<<<<< HEAD
-=======
-        Page<JustificationSimpleResponse> response = responseJustif.map(justificationMapper::toDto);
+        Page<Justification> justifications = justificationService.findAll(pageable);
+        Page<JustificationSimpleResponse> response= justifications.map(justificationMapper::toDto);
 
->>>>>>> fc3dfa5351683357fece5a9d73558b0e70244ce4
-//        Page<JusitficationAllResponse> response = justificationService.findAllWith(pageable);
-        Page<JustificationSimpleResponse> response = responseJustif.map(justificationMapper::toDto);
+//        Page<JustificationSimpleResponse> justifications = justificationService.findAll(pageable);
+
         return new ResponseEntity<>(
                 RestResponse.responsePaginate(
                         HttpStatus.OK,
@@ -85,11 +72,10 @@ public class JustificationControllerImpl implements IJustificationController {
     }
 
     @Override
-    @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> SelectdById(@PathVariable String id) {
-        var justification = justificationService.findJustificationById(id);
-        var justificationSimpleResponse = justificationMapper.toDto(justification);
-        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,justificationSimpleResponse, "justificationSimpleResponse"),
+        var justification = justificationService.findById(id);
+        var justificationDto = justificationMapper.toDto(justification);
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,justificationDto, "justificationSimpleResponse"),
                 HttpStatus.OK);
     }
 

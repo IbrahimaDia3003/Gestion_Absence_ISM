@@ -13,8 +13,10 @@ import java.util.Optional;
 public interface JustificationMapper {
 
     JustificationSimpleResponse toDto(Justification Justification);
-    JustificationSimpleResponse toDto(Optional<Justification> Justification);
     JusitficationAllResponse toDtoAll(JusitficationAllResponse etudiant);
+
+    JustificationSimpleResponse toDto(Optional<Justification> Justification);
+
 
     Justification toEntity(Justification request);
 

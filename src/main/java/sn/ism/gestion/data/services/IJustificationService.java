@@ -8,12 +8,8 @@ import sn.ism.gestion.web.dto.Request.JustificationRequest;
 import sn.ism.gestion.web.dto.Request.JustificationValidationRequest;
 import sn.ism.gestion.web.dto.Response.JusitficationAllResponse;
 
-import java.util.Optional;
-
 public interface IJustificationService extends Service<Justification> {
     Justification createJustication(JustificationRequest justificationRequest);
     Justification traiterJustication(String absenceId , JustificationValidationRequest justificationRequest);
     Page<JusitficationAllResponse> findAllWith(Pageable pageable);
-    Justification findJustificationByAbsenceId(String absenceId);
-    Optional<Justification> findJustificationById(String id);
 }
