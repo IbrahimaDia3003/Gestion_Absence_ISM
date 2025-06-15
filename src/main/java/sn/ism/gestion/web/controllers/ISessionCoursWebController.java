@@ -12,7 +12,7 @@ import java.util.Map;
 public interface ISessionCoursWebController {
 
     @GetMapping("/duJour")
-    ResponseEntity<Map<String,Object>> getSessionsDuJour(LocalDate date ,
+    ResponseEntity<Map<String,Object>> getSessionsDuJour(
                     @RequestParam(defaultValue = "0") int page,
                     @RequestParam(defaultValue = "10") int size);
 
@@ -26,4 +26,9 @@ public interface ISessionCoursWebController {
     ResponseEntity<Map<String,Object>> SelectAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size);
+
+    @GetMapping("/{id}/absences")
+    ResponseEntity<Map<String,Object>> getAbsencesBySessionId(@PathVariable String id,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size);
 }

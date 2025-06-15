@@ -50,15 +50,15 @@ public class AbsenceServiceImpl implements IAbsenceService {
         return absenceRepository.save(object);
     }
 
-    @Override
-    public Absence createAbsence(AbsenceRequest absenceRequest) {
-    var existingEtudiant = etudiantRepository.findEtudiantById(absenceRequest.getEtudiantId())
-            .orElseThrow(()-> new RuntimeException("Etudiant not found ou id baxxoul"));
-
-        Absence absenceCreate = absenceMapper.toEntityR(absenceRequest);
-        absenceCreate.setEtudiantId(existingEtudiant.getId());
-        return absenceRepository.save(absenceCreate);
-    }
+//    @Override
+//    public Absence createAbsence(AbsenceRequest absenceRequest) {
+//    var existingEtudiant = etudiantRepository.findEtudiantById(absenceRequest.getEtudiantId())
+//            .orElseThrow(()-> new RuntimeException("Etudiant not found ou id baxxoul"));
+//
+//        Absence absenceCreate = absenceMapper.toEntityR(absenceRequest);
+//        absenceCreate.setEtudiantId(existingEtudiant.getId());
+//        return absenceRepository.save(absenceCreate);
+//    }
 
 
     public Absence pointerEtudiantByMatricule(String sessionId, String matricule) {
@@ -180,11 +180,68 @@ public class AbsenceServiceImpl implements IAbsenceService {
     }
 
     @Override
-    public List<Absence> getAbsencebySessionId(String sessionId)
+    public List<AbsenceAllResponse> getAbsencebySessionId(String sessionId)
     {
-        if (sessionCoursRepository.existsById(sessionId))
-            return absenceRepository.findAbsenceBySessionId(sessionId);
-        return null;
+        if (!sessionCoursRepository.existsById(sessionId))
+            return null;
+
+        List<Absence> absences = absenceRepository.findAbsenceBySessionId(sessionId);
+
+        return absences.stream().map(a -> {
+            AbsenceAllResponse dto = new AbsenceAllResponse();
+            dto.setId(a.getId());
+            dto.setType(a.getType());
+            sessionCoursRepository.findById(a.getSessionId()).ifPresent(s -> {
+                dto.setDate(s.getDateSession());
+                coursRepository.findById(s.getCoursId()).ifPresent(c -> {
+                    dto.setSessionCourslibelle(c.getLibelle());
+                });
+            });
+            dto.setJustifiee(a.isJustifiee());
+            etudiantRepository.findById(a.getEtudiantId()).ifPresent(e -> {
+                utilisateurRepository.findById(e.getUtilisateurId()).ifPresent(u -> {
+                    dto.setPrenomEtudiant(u.getPrenom());
+                    dto.setNonEtudiant(u.getNom());
+                });
+                classeRepository.findById(e.getClasseId()).ifPresent(c -> {
+                    dto.setClasseEtudiant(c.getLibelle());
+                });
+            });
+            return dto;
+        }).toList();
+
+
+    }
+
+    @Override
+    public List<AbsenceAllResponse> getAbsencebyEtudiantId(String etudiantId)
+    {
+        if (!etudiantRepository.existsById(etudiantId))
+            return null;
+        List<Absence> absences = absenceRepository.findAbsenceByEtudiantId(etudiantId);
+        return absences.stream().map(a -> {
+            AbsenceAllResponse dto = new AbsenceAllResponse();
+            dto.setId(a.getId());
+            dto.setType(a.getType());
+            sessionCoursRepository.findById(a.getSessionId()).ifPresent(s -> {
+                dto.setDate(s.getDateSession());
+                coursRepository.findById(s.getCoursId()).ifPresent(c -> {
+                    dto.setSessionCourslibelle(c.getLibelle());
+                });
+            });
+            dto.setJustifiee(a.isJustifiee());
+            etudiantRepository.findById(a.getEtudiantId()).ifPresent(e -> {
+                utilisateurRepository.findById(e.getUtilisateurId()).ifPresent(u -> {
+                    dto.setPrenomEtudiant(u.getPrenom());
+                    dto.setNonEtudiant(u.getNom());
+                });
+                classeRepository.findById(e.getClasseId()).ifPresent(c -> {
+                    dto.setClasseEtudiant(c.getLibelle());
+                });
+            });
+            return dto;
+        }).toList();
+
     }
 
     @Override

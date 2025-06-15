@@ -11,28 +11,19 @@ import sn.ism.gestion.web.dto.Request.AbsenceRequest;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/web/pointages")
-public interface IAbsenceWebController extends Controller<Absence> {
+@RequestMapping("/api/web/absences")
+public interface IAbsenceWebController  {
 
-    @PostMapping("")
-    ResponseEntity<Map<String, Object>> Create(@Valid @RequestBody AbsenceRequest request,
-                                               BindingResult bindingResult);
-
-    @PostMapping("/pointer")
-     ResponseEntity<?> pointerEtudiantByQRcode(@RequestParam String sessionId,
-                                       @RequestParam String etudiantId);
-
-    @PostMapping("/pointerByMatricule")
-    ResponseEntity<?> pointerEtudiantByMatricule(@RequestParam String sessionId,
-                                      @RequestParam String matricule);
-
+    @GetMapping("/all")
+    ResponseEntity<Map<String, Object>> SelectAll(  @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size);
 
     @GetMapping("/{etudiantId}")
     ResponseEntity<Map<String,Object>> findAbsencesByEtudiant(@PathVariable String id, 
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size);
 
-    @GetMapping("/{id}/details")
-    ResponseEntity<Map<String,Object>> findByDetailsId(@PathVariable String id);
+    @GetMapping("/{id}")
+    ResponseEntity<Map<String, Object>> SelectdById(@PathVariable String id);
 
 }

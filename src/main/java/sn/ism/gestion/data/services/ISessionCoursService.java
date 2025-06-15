@@ -10,9 +10,9 @@ import sn.ism.gestion.web.dto.Response.SessionAllResponse;
 
 public interface ISessionCoursService extends Service<SessionCours> {
 
-    List<SessionAllResponse> getAllSessionCours(LocalDate date);
+    List<SessionAllResponse> getAllSessionCoursDuJour();
     List<SessionAllResponse> getAllSessionCours();
-    List<SessionEtudiantQrCodeMobileResponse> getSessionsDuJourWithEtudiant() ;
+    List<SessionEtudiantQrCodeMobileResponse> getSessionsDuJourWithEtudiant();
 //    List<SessionCours> findSessionCoursByEtudiantId(String etudiantId);
 
 }

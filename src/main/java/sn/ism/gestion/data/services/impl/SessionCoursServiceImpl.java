@@ -123,7 +123,9 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
 //    }
 
     @Override
-    public List<SessionAllResponse> getAllSessionCours(LocalDate date ) {
+    public List<SessionAllResponse> getAllSessionCoursDuJour()
+    {
+        LocalDate date = LocalDate.now();
         List<SessionCours> sessions = sessionCoursRepository.findByDate(date);
 
         if (sessions.isEmpty()) {
@@ -137,10 +139,21 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
             dto.setHeureDebut(s.getHeureDebut());
             dto.setHeureFin(s.getHeureFin());
             dto.setMode(s.getMode());
+            coursRepository.findById(s.getCoursId()).ifPresent(c -> {
+                dto.setCoursLibelle(c.getLibelle());
+            });
+            classeRepository.findById(s.getClasseId()).ifPresent(classe -> {
+                dto.setClasseLibelle(classe.getLibelle());
+            });
+            salleRepository.findById(s.getSalleId()).ifPresent(salle -> {
+                dto.setSalleCours(salle.getNumero());
+            });
+
             return dto;
         }).toList();
-//        return sessions;
     }
+
+
 
     @Override
     public List<SessionAllResponse> getAllSessionCours()

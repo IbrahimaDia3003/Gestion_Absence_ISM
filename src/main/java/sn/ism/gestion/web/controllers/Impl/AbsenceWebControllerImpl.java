@@ -34,25 +34,6 @@ public class AbsenceWebControllerImpl implements IAbsenceWebController {
     @Autowired
     private final AbsenceMapper absenceMapper;
 
-    @Override
-    public ResponseEntity<Map<String, Object>> Create(AbsenceRequest request, BindingResult bindingResult) {
-
-            if (bindingResult.hasErrors()) {
-            Map<String, Object> errors = new HashMap<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField(), error.getDefaultMessage());
-            }
-            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-        }
-        Absence absence = absenceService.createAbsence(request);
-        Absence entityAbsence = absenceMapper.toEntity(absence);
-
-        return new ResponseEntity<>(RestResponse.response(
-            HttpStatus.CREATED,
-                    entityAbsence,
-                    "PointageCreateRequest"),
-            HttpStatus.CREATED);
-    }
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectAll( int page,int size)
@@ -74,21 +55,10 @@ public class AbsenceWebControllerImpl implements IAbsenceWebController {
                         response.getTotalElements(),
                         response.isFirst(),
                         response.isLast(),
-                        "PointageAllResponses"),
+                        "AbsenceAllResponses"),
                 HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<?> pointerEtudiantByQRcode(@RequestParam String sessionId, @RequestParam String etudiantId) {
-        Absence absence = absenceService.pointerEtudiant(sessionId, etudiantId);
-        return ResponseEntity.ok().body(absence);
-    }
-
-    @Override
-    public ResponseEntity<?> pointerEtudiantByMatricule(@RequestParam String sessionId, @RequestParam String matricule) {
-        Absence absence = absenceService.pointerEtudiantByMatricule(sessionId, matricule);
-        return ResponseEntity.ok().body(absence);
-    }
 
     @Override
     @GetMapping("/{id}")
@@ -97,35 +67,36 @@ public class AbsenceWebControllerImpl implements IAbsenceWebController {
         var absenceDto = absenceMapper.toDtoAll(absence);
         return new ResponseEntity<>(RestResponse.response(
                         HttpStatus.OK,absenceDto,
-                        "PointageSimpleResponse"),
+                        "AbsenceSimpleResponse"),
                 HttpStatus.OK);
     }
 
 
-    @Override
-    public ResponseEntity<Map<String, Object>> Update(String id, Absence request) {
-        return null;
-    }
-
 
     @Override
-    public ResponseEntity<Map<String, Object>> Delete(String id) {
-        Absence absence = absenceService.findById(id);
-        absenceService.delete(id);
+    public ResponseEntity<Map<String, Object>> findAbsencesByEtudiant(String id, int page, int size)
+    {
+        List<AbsenceAllResponse> all = absenceService.getAbsencebyEtudiantId(id);
+        int start = Math.min(page * size, all.size());
+        int end = Math.min(start + size, all.size());
+        List<AbsenceAllResponse> content = all.subList(start, end);
+        Page<AbsenceAllResponse> pageResult = new PageImpl<>(content, PageRequest.of(page, size), all.size());
+        Page<AbsenceAllResponse> response = pageResult.map(absenceMapper::toDto);
         return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.ACCEPTED, absence, "DeleteAbsence"),
-                HttpStatus.ACCEPTED);
+                RestResponse.responsePaginate(
+                        HttpStatus.OK,
+                        response.getContent(),
+                        response.getNumber(),
+                        response.getTotalPages(),
+                        response.getTotalElements(),
+                        response.isFirst(),
+                        response.isLast(),
+                        "AbsenceAllResponsesEtudiant"),
+                HttpStatus.OK);
+
     }
 
-    @Override
-    public ResponseEntity<Map<String, Object>> findAbsencesByEtudiant(String id, int page, int size) {
-        return null;
-    }
 
-    @Override
-    public ResponseEntity<Map<String, Object>> findByDetailsId(String id) {
-        return null;
-    }
 
 
 
