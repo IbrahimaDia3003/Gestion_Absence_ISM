@@ -21,5 +21,8 @@ public class SessionAllMobileResponse {
     private LocalTime heureFin;
     private ModeCours mode;
     private String classeLibelle;
+    private String coursLibelle;
+    private String salleCours;
+
 
 }

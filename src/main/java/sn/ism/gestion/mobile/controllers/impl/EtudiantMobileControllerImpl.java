@@ -89,17 +89,13 @@ public class EtudiantMobileControllerImpl implements IEtudiantMobileController {
     {
         List<EtudiantAllResponse> etudiants = etudiantService.getAllEtudiants();
 
-        return new  ResponseEntity<>(RestResponse.response(HttpStatus.OK, etudiants, "JustificationAllResponse"), HttpStatus.OK);
+        return new  ResponseEntity<>(RestResponse.response(HttpStatus.OK, etudiants, "EtudiantAllResponse"), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Map<String, Object>> getMyListAbsences(String id) {
-        List<Absence> absences = etudiantService.getAbsencesByEtudiantId(id);
-        List<AbsenceEtudiantResponse> absencesDto = absences.stream()
-                .map(absence -> absenceMapper.toDtoMobile(absence))
-                .toList();
-
-        return ResponseEntity.ok(RestResponseMobile.ofSuccess("EtudiantListePointages", absencesDto));
+        List<AbsenceEtudiantResponse> absences = etudiantService.getAbsencesByEtudiantId(id);
+        return ResponseEntity.ok(RestResponseMobile.ofSuccess("EtudiantListePointages", absences));
     }
 
     @Override

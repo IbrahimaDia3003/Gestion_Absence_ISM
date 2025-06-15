@@ -19,6 +19,7 @@ import sn.ism.gestion.data.entities.Absence;
 import sn.ism.gestion.data.entities.Etudiant;
 import sn.ism.gestion.data.entities.Justification;
 import sn.ism.gestion.data.services.IEtudiantService;
+import sn.ism.gestion.mobile.dto.Response.AbsenceEtudiantResponse;
 import sn.ism.gestion.utils.mapper.EtudiantMapper;
 import sn.ism.gestion.web.controllers.IEtudiantWebController;
 import sn.ism.gestion.web.dto.Request.EtudiantSimpleRequest;
@@ -133,16 +134,16 @@ public class EtudiantWebControllerImpl implements IEtudiantWebController {
     @Override
     public ResponseEntity<Map<String, Object>> getMyListAbsences(String id,int page,int size)
     {
-        List<Absence> all = etudiantService.getAbsencesByEtudiantId(id);
+        List<AbsenceEtudiantResponse> all = etudiantService.getAbsencesByEtudiantId(id);
 
         int start = Math.min(page * size, all.size());
         int end = Math.min(start + size, all.size());
-        List<Absence> content = all.subList(start, end);
+        List<AbsenceEtudiantResponse> content = all.subList(start, end);
 
 //        Page<?> absences = etudiantService.getAbsencesByEtudiantId(id );
 
 
-        PageImpl<Absence> response = new PageImpl<>(content, PageRequest.of(page, size), all.size());
+        PageImpl<AbsenceEtudiantResponse> response = new PageImpl<>(content, PageRequest.of(page, size), all.size());
 //        Page<EtudiantAllResponse> response = pageResult.map(etudiantMapper::toDtoAll);
 
         return new ResponseEntity<>(

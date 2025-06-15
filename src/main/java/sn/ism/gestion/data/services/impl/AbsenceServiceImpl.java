@@ -39,9 +39,10 @@ public class AbsenceServiceImpl implements IAbsenceService {
     private AbsenceMapper absenceMapper;
     @Autowired
     private SessionsCoursRepository sessionCoursRepository;
-
     @Autowired
     private ClasseRepository classeRepository;
+    @Autowired
+    private CoursRepository coursRepository;
 
 
     @Override
@@ -158,7 +159,12 @@ public class AbsenceServiceImpl implements IAbsenceService {
             AbsenceAllResponse dto = new AbsenceAllResponse();
             dto.setId(a.getId());
             dto.setType(a.getType());
-            dto.setSessionId(a.getSessionId());
+            sessionCoursRepository.findById(a.getSessionId()).ifPresent(s -> {
+                dto.setDate(s.getDateSession());
+                coursRepository.findById(s.getCoursId()).ifPresent(c -> {
+                    dto.setSessionCourslibelle(c.getLibelle());
+                });
+            });
             dto.setJustifiee(a.isJustifiee());
             etudiantRepository.findById(a.getEtudiantId()).ifPresent(e -> {
                 utilisateurRepository.findById(e.getUtilisateurId()).ifPresent(u -> {
@@ -174,51 +180,10 @@ public class AbsenceServiceImpl implements IAbsenceService {
     }
 
     @Override
-    public List<AbsenceSimpleResponse> getAbsencebySessionId(String sessionId)
+    public List<Absence> getAbsencebySessionId(String sessionId)
     {
-        if (!sessionCoursRepository.existsById(sessionId))
-            return null;
-
-        List<Absence> absences=  absenceRepository.findAbsenceBySessionId(sessionId);
-
-        if (!absences.isEmpty())
-        {
-           var AbsenceWithSession =  absences.stream().map(
-                    absence -> {
-
-                        Etudiant etudiant = etudiantRepository.findById(absence.getEtudiantId())
-                                .orElseThrow(() -> new RuntimeException("Étudiant introuvable"));
-
-                        Utilisateur utilisateur = utilisateurRepository.findById(etudiant.getUtilisateurId())
-                                .orElseThrow(() -> new RuntimeException("Utilisateur de l'étudiant introuvable"));
-
-                        SessionCours session = sessionCoursRepository.findById(absence.getSessionId()).orElse(null);
-
-                        AbsenceSimpleResponse dto = new AbsenceSimpleResponse();
-                        dto.setId(absence.getId());
-                        dto.setType(absence.getType());
-                        dto.setJustifiee(absence.isJustifiee());
-                        dto.setJustificationId(absence.getJustificationId());
-
-                        classeRepository.findById(etudiant.getClasseId()).ifPresent(c -> {
-                            dto.setClasseEtudiant(c.getLibelle());
-                        });
-                        dto.setSessionId(absence.getSessionId());
-
-                        dto.setNomEtudiant(utilisateur.getNom());
-                        dto.setPrenomEtudiant(utilisateur.getPrenom());
-                        if (session != null) {
-                            dto.setSessionDate(session.getDateSession());
-                            dto.setHeureDebut(session.getHeureDebut());
-                            dto.setHeureFin(session.getHeureFin());
-                        }
-
-                        return dto;
-                    }
-
-            ).toList();
-            return AbsenceWithSession;
-        }
+        if (sessionCoursRepository.existsById(sessionId))
+            return absenceRepository.findAbsenceBySessionId(sessionId);
         return null;
     }
 

@@ -18,6 +18,4 @@ public class Justification extends AbstractEntity {
     private String fichierUrl;
     private StatutJustification statut;
     private LocalDate dateSoumission = LocalDate.now() ;
-    private String imageUrl; // <- lien vers Cloudinary
-
 }

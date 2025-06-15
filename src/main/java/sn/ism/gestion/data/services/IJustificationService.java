@@ -10,7 +10,7 @@ import sn.ism.gestion.web.dto.Response.JustificationSimpleResponse;
 import java.util.List;
 
 public interface IJustificationService extends Service<Justification> {
-    Justification createJustication(Justification justification);
+//    Justification createJustication(Justification justification);
 
     Justification traiterJustication(String absenceId, JustificationValidationRequest justificationRequest);
 

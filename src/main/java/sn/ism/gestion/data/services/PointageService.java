@@ -10,6 +10,4 @@ public interface PointageService
     Pointages createPointage(String vigileId , EtudiantQrCodeRequest etudiantQrCode);
     List<Pointages> getPointagesByVigile(String vigileId);
 
-
-
 }

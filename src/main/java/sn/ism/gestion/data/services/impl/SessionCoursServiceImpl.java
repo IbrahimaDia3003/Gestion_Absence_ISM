@@ -23,10 +23,13 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
     @Autowired private ClasseRepository classeRepository;
     @Autowired private UtilisateurRepository utilisateurRepository;
     @Autowired private PaiementRepository paiementRepository;
-    @Autowired private SessionsCoursRepository sessionsCoursRepository;
+    @Autowired private CoursRepository coursRepository;
+    @Autowired private SalleRepository salleRepository;
+
 
     @Override
-    public SessionCours create(SessionCours object) {
+    public SessionCours create(SessionCours object)
+    {
         return sessionCoursRepository.save(object);
     }
 
@@ -88,9 +91,16 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
                 dto.setSessionId(session.getId());
                 dto.setNomComplet(utilisateur.getPrenom() + " " + utilisateur.getNom());
                 dto.setMatricule(etudiant.getMatricule());
-                dto.setCours(classe.getLibelle());
+                dto.setClasseLibelle(classe.getLibelle());
                 dto.setHeureSession(session.getHeureDebut());
                 dto.setDateSession(session.getDateSession()); // déjà LocalDate
+                coursRepository.findById(session.getCoursId()).ifPresent(c ->
+                {
+                    dto.setCours(c.getLibelle());
+                });
+                salleRepository.findById(session.getSalleId()).ifPresent(salle -> {
+                    dto.setSalleCours(salle.getNumero());
+                });
 
                 List<Paiement> paiements = paiementRepository.findAll();
                 Optional<Paiement> paiement = paiements.stream()
@@ -105,13 +115,6 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
 
     }
 
-    @Override
-    public List<SessionCours> findSessionCoursByDateSession()
-    {
-        LocalDate aujourdHui = LocalDate.now();
-       return sessionCoursRepository.findSessionCoursByDateSession(aujourdHui);
-    }
-
 //    @Override
 //    public List<SessionCours> findSessionCoursByEtudiantId(String etudiantId)
 //    {
@@ -120,8 +123,7 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
 //    }
 
     @Override
-    public List<SessionAllResponse> getAllSessionCours(LocalDate date )
-    {
+    public List<SessionAllResponse> getAllSessionCours(LocalDate date ) {
         List<SessionCours> sessions = sessionCoursRepository.findByDate(date);
 
         if (sessions.isEmpty()) {
@@ -138,6 +140,35 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
             return dto;
         }).toList();
 //        return sessions;
+    }
+
+    @Override
+    public List<SessionAllResponse> getAllSessionCours()
+    {
+        List<SessionCours> sessions = sessionCoursRepository.findAll();
+        if (sessions.isEmpty()) {
+            return Collections.emptyList(); // retourne une liste vide plutôt que null
+        }
+        return sessions.stream().map(s -> {
+            SessionAllResponse dto = new SessionAllResponse();
+            dto.setId(s.getId());
+            dto.setSalle(s.getSalleId());
+            dto.setDate(s.getDateSession());
+            dto.setHeureDebut(s.getHeureDebut());
+            dto.setHeureFin(s.getHeureFin());
+            dto.setMode(s.getMode());
+            coursRepository.findById(s.getCoursId()).ifPresent(c ->
+            {
+                dto.setCoursLibelle(c.getLibelle());
+            });
+            classeRepository.findById(s.getClasseId()).ifPresent(classe -> {
+                dto.setClasseLibelle(classe.getLibelle());
+            });
+            salleRepository.findById(s.getSalleId()).ifPresent(salle -> {
+                dto.setSalleCours(salle.getNumero());
+            });
+            return dto;
+        }).toList();
     }
 
 }

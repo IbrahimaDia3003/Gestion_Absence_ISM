@@ -1,31 +1,23 @@
-package sn.ism.gestion.web.dto.Response;
+package sn.ism.gestion.web.dto.Request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
 import sn.ism.gestion.data.enums.ModeCours;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-
-
-import lombok.Getter;
-import lombok.Setter;
-import sn.ism.gestion.data.enums.Role;
 
 @Getter
 @Setter
-public class SessionSimpleResponse {
-
-    private  String id;
+public class SessionRequest
+{
     private String coursId;
-    private LocalDate date;
     private LocalTime heureDebut;
     private LocalTime heureFin;
     private int nombreHeures;
     private ModeCours mode;
     private String classeId;
     private boolean valide;
-    private String salleCours;
-
-
+    private String salleId;
 }

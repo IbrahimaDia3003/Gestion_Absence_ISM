@@ -19,5 +19,5 @@ public interface IAbsenceService extends Service<Absence>
     Absence createAbsence(AbsenceRequest object);
     AbsenceSimpleResponse getOne(String id);
     List<AbsenceAllResponse> getAllAbsences();
-    List<AbsenceSimpleResponse> getAbsencebySessionId(String sessionId);
+    List<Absence> getAbsencebySessionId(String sessionId);
 }

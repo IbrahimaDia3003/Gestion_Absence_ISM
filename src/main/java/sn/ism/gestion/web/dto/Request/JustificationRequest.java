@@ -16,6 +16,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class JustificationRequest {
 
+
+
+    @NotBlank(message = "L'ID de l'étudiant est requis")
+
     @NotBlank(message = "Le commentaire est requis")
     private String commentaire;
 
@@ -25,7 +29,8 @@ public class JustificationRequest {
     private StatutJustification statut=StatutJustification.EN_ATTENTE ;
 
 
-    public Justification toJustification() {
+    public Justification toJustification()
+    {
         Justification justification = new Justification();
         justification.setCommentaire(commentaire);
         justification.setFichierUrl(fichierUrl);

@@ -45,7 +45,7 @@ public class JustificationWebControllerImpl implements IJustificationWebControll
             }
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
-        Justification justification = justificationService.createJustication(request.toJustification());
+        Justification justification = justificationService.create(request.toJustification());
         Justification entityJustification = justificationMapper.toEntity(justification);
 
         return new ResponseEntity<>(RestResponse.response(HttpStatus.CREATED, entityJustification, "JustificationCreate"), HttpStatus.CREATED);

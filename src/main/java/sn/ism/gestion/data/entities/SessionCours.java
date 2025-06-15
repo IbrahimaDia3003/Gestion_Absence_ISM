@@ -1,6 +1,7 @@
 package sn.ism.gestion.data.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -19,7 +20,8 @@ public class SessionCours extends AbstractEntity {
 
     private String coursId;
     @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDate dateSession;
+    @CreatedDate
+    private LocalDate dateSession = LocalDate.now();
     @JsonFormat(pattern = "HH:mm")
     private LocalTime heureDebut;
     @JsonFormat(pattern = "HH:mm")

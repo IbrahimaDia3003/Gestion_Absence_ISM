@@ -31,6 +31,7 @@ public class DataInitializer {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private PaiementRepository paiementRepository;
     @Autowired private JustificationRepository justificationRepository;
+    @Autowired private SalleRepository salleRepository;
 
 
     @PostConstruct
@@ -73,6 +74,16 @@ public class DataInitializer {
             filieres.add(f);
         }
         filiereRepository.saveAll(filieres);
+
+        List<Salle> salles = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Salle salle = new Salle();
+            salle.setNom("Salle " + i);
+            salle.setNumero("S" + i);
+            salle.setNombrePlaces(30 + i * 5); // Nombre de places variable
+            salles.add(salle);
+        }
+        salleRepository.saveAll(salles);
 
         // Classes
         List<Classe> classes = new ArrayList<>();
@@ -136,7 +147,7 @@ public class DataInitializer {
 
         // Vigiles
         List<Vigile> vigiles = new ArrayList<>();
-        for (int i = 2; i < utilisateurs.size(); i++) {
+        for (int i = 1; i<2; i++) {
             Vigile v = new Vigile();
             v.setUtilisateurId(utilisateurs.get(i).getId());
             vigiles.add(v);
@@ -173,6 +184,7 @@ public class DataInitializer {
                 session.setNombreHeures(2);
                 session.setMode(ModeCours.PRESENTIEL);
                 session.setCoursId(coursList.get(j % coursList.size()).getId());
+                session.setSalleId(salles.get(j % salles.size()).getId());
                 session.setValide(true);
                 sessions.add(session);
             }

@@ -19,6 +19,9 @@ public class SessionAllResponse {
     private LocalTime heureFin;
     private ModeCours mode;
     private String salle;
+    private String classeLibelle;
+    private String coursLibelle;
+    private String salleCours;
 
 
 }

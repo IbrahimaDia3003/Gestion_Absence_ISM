@@ -45,11 +45,11 @@ public  class JustificationServiceImpl implements IJustificationService
         return justificationRepository.save(object);
     }
 
-    @Override
-    public Justification createJustication(Justification justification)
-    {
-        return justificationRepository.save(justification);
-    }
+//    @Override
+//    public Justification createJustication(Justification justification)
+//    {
+//        return justificationRepository.save(justification);
+//    }
 
     @Override
     public Justification traiterJustication(String absenceId, JustificationValidationRequest justificationRequest) {
@@ -97,7 +97,7 @@ public  class JustificationServiceImpl implements IJustificationService
         Justification justification = justificationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aucune justification"));
 
-        Absence absence = absenceRepository.findById(id)
+        Absence absence = absenceRepository.findById(justification.getAbsenceId())
                 .orElseThrow(() -> new RuntimeException("Aucun Absence trouvé"));
 
         Etudiant etudiant = etudiantRepository.findById(absence.getEtudiantId())

@@ -21,6 +21,6 @@ public class SessionSimpleMobileResponse {
     private ModeCours mode;
     private String classeId;
     private boolean valide;
-    private List<String> etudiantsAttendus;
+    private String salleCours;
 
 }

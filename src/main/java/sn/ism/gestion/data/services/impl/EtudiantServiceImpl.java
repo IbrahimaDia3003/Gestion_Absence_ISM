@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,7 @@ import sn.ism.gestion.data.enums.StatusPaiment;
 import sn.ism.gestion.data.repositories.*;
 import sn.ism.gestion.data.services.IEtudiantService;
 import sn.ism.gestion.mobile.dto.Request.EtudiantQrCodeRequest;
+import sn.ism.gestion.mobile.dto.Response.AbsenceEtudiantResponse;
 import sn.ism.gestion.mobile.dto.Response.SessionAllMobileResponse;
 import sn.ism.gestion.mobile.dto.Response.SessionEtudiantQrCodeMobileResponse;
 import sn.ism.gestion.utils.exceptions.EntityNotFoundExecption;
@@ -40,12 +39,12 @@ public class EtudiantServiceImpl implements IEtudiantService {
     @Autowired private UtilisateurMapper utilisateurMapper;
     @Autowired private EtudiantMapper etudiantMapper;
     @Autowired private JustificationRepository justificationRepository;
-    @Autowired private JustificationServiceImpl justificationServiceImpl;
     @Autowired private ClasseRepository classeRepository;
     @Autowired private FiliereRepository filiereRepository;
-    @Autowired private SessionCoursServiceImpl sessionCoursService;
     @Autowired private SessionsCoursRepository sessionsCoursRepository;
     @Autowired private PaiementRepository paiementRepository;
+    @Autowired private CoursRepository coursRepository;
+    @Autowired private SalleRepository salleRepository;
 
 
     public Etudiant createEtudiant(EtudiantSimpleRequest etudiantSimpleRequest) {
@@ -109,6 +108,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
     @Override
     public Justification justifierAbsence(String absenceId, Justification justification)
     {
+
         Absence absence = absenceRepository.findById(absenceId)
                 .orElseThrow(() -> new EntityNotFoundExecption("Absence non trouvée"));
         if (absence.getType()==Situation.PRESENT || absence.isJustifiee()) {
@@ -117,7 +117,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
         justification.setAbsenceId(absence.getId());
         absence.setJustifiee(true);
         absenceRepository.save(absence);
-        return justificationServiceImpl.createJustication(justification);
+        return justificationRepository.save(justification);
 
     }
 
@@ -164,7 +164,13 @@ public class EtudiantServiceImpl implements IEtudiantService {
             dtoAbsence.setId(abs.getId());
             dtoAbsence.setType(abs.getType());
             dtoAbsence.setJustifiee(abs.isJustifiee());
-            dtoAbsence.setSessionId(abs.getSessionId()); // tu peux remplacer par le nom si tu as la session
+            sessionsCoursRepository.findById(abs.getSessionId()).ifPresent(s -> {
+                dtoAbsence.setDate(s.getDateSession());
+                coursRepository.findById(s.getCoursId()).ifPresent(c -> {
+                    dtoAbsence.setSessionCourslibelle(c.getLibelle());
+                });
+            });
+
             dtoAbsence.setNonEtudiant(utilisateur.getNom());
             dtoAbsence.setPrenomEtudiant(utilisateur.getPrenom());
             dtoAbsence.setClasseEtudiant(etudiant.getClasseId());
@@ -180,6 +186,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
         classeRepository.findById(etudiant.getClasseId()).ifPresent(c -> {
             dto.setClasse(c.getLibelle());
         });
+
         dto.setAbsences(absenceResponses);
 
         if (filiere != null) {
@@ -272,12 +279,21 @@ public class EtudiantServiceImpl implements IEtudiantService {
             response.setHeureFin(session.getHeureFin());
             response.setMode(session.getMode());
             response.setDate(session.getDateSession());
+            coursRepository.findById(session.getCoursId()).ifPresent(c -> {
+                response.setCoursLibelle(c.getLibelle());
+            });
+            coursRepository.findById(session.getCoursId()).ifPresent(c ->
+            {
+                response.setCoursLibelle(c.getLibelle());
+            });
+            classeRepository.findById(session.getClasseId()).ifPresent(classe -> {
+                response.setClasseLibelle(classe.getLibelle());
+            });;
+            salleRepository.findById(session.getSalleId()).ifPresent(salle -> {
+                response.setSalleCours(salle.getNumero());
+            });
 
-            Optional<Classe> classeOpt = classeRepository.findById(session.getClasseId());
-            if (classeOpt.isEmpty()) continue;
 
-            Classe classe = classeOpt.get();
-            response.setClasseLibelle(classe.getLibelle());
 
             responseList.add(response);
         }
@@ -314,9 +330,32 @@ public class EtudiantServiceImpl implements IEtudiantService {
 
 
     @Override
-    public List<Absence> getAbsencesByEtudiantId(String etudiantId)
+    public List<AbsenceEtudiantResponse> getAbsencesByEtudiantId(String etudiantId)
     {
-        return absenceRepository.findAbsenceByEtudiantId(etudiantId);
+        List<Absence> absences = absenceRepository.findAbsenceByEtudiantId(etudiantId);
+
+        return absences.stream().map(a -> {
+            AbsenceEtudiantResponse dto = new AbsenceEtudiantResponse();
+            dto.setId(a.getId());
+            dto.setType(a.getType());
+            dto.setSessionId(a.getSessionId());
+            sessionsCoursRepository.findById(a.getSessionId()).ifPresent(s -> {
+                dto.setDate(s.getDateSession());
+                coursRepository.findById(s.getCoursId()).ifPresent(c -> {
+                    dto.setCoursLibelle(c.getLibelle());
+                });
+            });
+            dto.setJustifiee(a.isJustifiee());
+            etudiantRepository.findById(etudiantId)
+                    .flatMap(e ->
+                            classeRepository.findById(e.getClasseId()))
+                    .ifPresent(c ->
+                    {
+                        dto.setClasseEtudiant(c.getLibelle());
+                    }
+            );
+            return dto;
+        }).toList();
     }
 
     public Optional<EtudiantQrCodeRequest> getEtudiantSessionPourPointage(String matricule) {
