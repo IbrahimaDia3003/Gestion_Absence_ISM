@@ -20,8 +20,7 @@ public class SessionCours extends AbstractEntity {
 
     private String coursId;
     @JsonFormat(pattern = "dd/MM/yyyy")
-    @CreatedDate
-    private LocalDate dateSession = LocalDate.now();
+    private LocalDate dateSession ;
     @JsonFormat(pattern = "HH:mm")
     private LocalTime heureDebut;
     @JsonFormat(pattern = "HH:mm")

@@ -21,9 +21,9 @@ public interface IEtudiantMobileController
      @GetMapping("/qrcode/{matricule}")
      ResponseEntity<Map<String,Object>> getQrCodeEtudiant(@PathVariable String matricule);
 
-     @PostMapping("/{id}/justificationAbsence")
+     @PostMapping("/{absenceId}/justificationAbsence")
      ResponseEntity<Map<String,Object>> justifierAbsence(
-             @PathVariable String id ,
+             @PathVariable String absenceId ,
              @RequestBody JustificationRequest justification);
 
      @GetMapping("/{id}/justifications")

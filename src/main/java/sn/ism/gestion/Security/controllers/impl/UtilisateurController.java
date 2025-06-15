@@ -32,7 +32,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("api/utilisateurs")
 @CrossOrigin(origins = "http://localhost:4200")
-public class UtilisateurController implements IUtilisateurController {
+public class UtilisateurController implements IUtilisateurController
+{
 
     private final IUtilisateurService utilisateurService;
     private final UtilisateurMapper utilisateurMapper;
@@ -47,16 +48,16 @@ public class UtilisateurController implements IUtilisateurController {
                     new UsernamePasswordAuthenticationToken(request.getLogin(), request.getMotDePasse())
             );
 
-            if (auth.isAuthenticated()) {
-                Utilisateur utilisateur = utilisateurRepository.findByLogin(request.getLogin())
-                        .orElse(null);
+            if (auth.isAuthenticated())
+            {
+                UtilisateurSimpleResponse utilisateur = utilisateurService.findByLogin(request.getLogin());
 
                 if (utilisateur != null) {
                     String token = jwtService.generateToken(utilisateur.getLogin());
-
+//                    UtilisateurSimpleResponse userConnect = utilisateurMapper.toDto(utilisateur);
                     Map<String, Object> data = new HashMap<>();
                     data.put("token", token);
-                    data.put("utilisateur", utilisateur); // tu peux remplacer par un DTO si tu veux masquer le mot de passe
+                    data.put("utilisateurConnect", utilisateur); // tu peux remplacer par un DTO si tu veux masquer le mot de passe
 
                     return new ResponseEntity<>(
                             RestResponse.response(HttpStatus.OK, data, "Connexion réussie"),

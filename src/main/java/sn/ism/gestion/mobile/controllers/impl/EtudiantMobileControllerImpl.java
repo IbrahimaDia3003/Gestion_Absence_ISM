@@ -44,9 +44,9 @@ public class EtudiantMobileControllerImpl implements IEtudiantMobileController {
 
 
     @Override
-    public ResponseEntity<Map<String, Object>> justifierAbsence(String id, JustificationRequest justification)
+    public ResponseEntity<Map<String, Object>> justifierAbsence(String absenceId, JustificationRequest justification)
     {
-        Justification justificationAbsence = etudiantService.justifierAbsence(id, justification.toJustification());
+        Justification justificationAbsence = etudiantService.justifierAbsence(absenceId, justification.toJustification());
 
 //        Justification justificationAdd = justificationMapper.toEntityR(justificationAbsence);
 

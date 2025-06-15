@@ -74,7 +74,8 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:*",
-                "https://absence-ism-frontend-cxz2.vercel.app"
+                "https://absence-ism-frontend-cxz2.vercel.app",
+                "https://absence-ism-frontend-angular.vercel.app"
         ));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

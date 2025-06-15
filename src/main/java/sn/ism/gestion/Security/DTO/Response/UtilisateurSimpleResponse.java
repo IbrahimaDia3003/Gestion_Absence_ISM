@@ -13,5 +13,7 @@ public class UtilisateurSimpleResponse {
     private String login;
     private String photo;
     private Role role;
+    private String motDePasse;
+    private String userConnectId;
 
 }

@@ -20,6 +20,9 @@ public interface EtudiantRepository extends MongoRepository<Etudiant, String> {
 
     Etudiant findEtudiantByAbsenceIdsContaining(String absenceId);
 
+    Etudiant findEtudiantByUtilisateurId(String utilisateurId);
+
+
 //    List<Absence> findAbsencesByEtudiantId(String etudiantId);
 
 //    Classe findClasseByEtudiantId(String etudiantId);
