@@ -59,6 +59,11 @@ public class DataInitializer {
             u.setPhoto("absent.img");
             if (i == 1 || i == 2) {
                 u.setRole(Role.VIGILE);
+            }
+            else if (i == 3)
+            {
+                u.setRole(Role.ADMIN);
+
             } else {
                 u.setRole(Role.ETUDIANT);
             }
@@ -101,7 +106,7 @@ public class DataInitializer {
 
         // Étudiants
         List<Etudiant> etudiants = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             Etudiant e = new Etudiant();
             e.setMatricule("MATRICULE" + (i + 1));
             e.setUtilisateurId(utilisateurs.get(i).getId());
@@ -171,25 +176,78 @@ public class DataInitializer {
 
         // Sessions de cours
         List<SessionCours> sessions = new ArrayList<>();
-        for (Classe classe : classes) {
-            List<Etudiant> etudiantsClasse = etudiantRepository.findByclasseId(classe.getId());
-            List<String> etudiantIds = etudiantsClasse.stream().map(Etudiant::getId).toList();
+        int nombreSessionsParClasse = 5;
+        int heureDebutInitiale = 8;
+        int heureFinMax = 18;
+        int nombreJours = 10; // Sessions possibles sur les 10 prochains jours
 
-            for (int j = 0; j < 5; j++) {
-                SessionCours session = new SessionCours();
-                session.setClasseId(classe.getId());
-                session.setDateSession(LocalDate.now());
-                session.setHeureDebut(LocalTime.now());
-                session.setHeureFin(LocalTime.now().plusHours(2));
-                session.setNombreHeures(2);
-                session.setMode(ModeCours.PRESENTIEL);
-                session.setCoursId(coursList.get(j % coursList.size()).getId());
-                session.setSalleId(salles.get(j % salles.size()).getId());
-                session.setValide(true);
-                sessions.add(session);
+        record TimeSlot(LocalTime start, LocalTime end) {
+            boolean overlaps(TimeSlot other) {
+                return !(end.isBefore(other.start) || start.isAfter(other.end));
             }
         }
+
+// Occupation des classes et salles par jour
+        Map<String, Map<LocalDate, List<TimeSlot>>> occupationClasse = new HashMap<>();
+        Map<String, Map<LocalDate, List<TimeSlot>>> occupationSalle = new HashMap<>();
+
+        for (Classe classe : classes) {
+            occupationClasse.putIfAbsent(classe.getId(), new HashMap<>());
+            int sessionsCrees = 0;
+
+            for (int jourOffset = 0; jourOffset < nombreJours && sessionsCrees < nombreSessionsParClasse; jourOffset++) {
+                LocalDate dateSession = LocalDate.now().plusDays(jourOffset);
+                occupationClasse.get(classe.getId()).putIfAbsent(dateSession, new ArrayList<>());
+
+                // Essayer différentes heures dans la journée
+                for (int h = heureDebutInitiale; h <= heureFinMax - 2; h += 2) {
+                    LocalTime heureDebut = LocalTime.of(h, 0);
+                    LocalTime heureFin = heureDebut.plusHours(2);
+                    TimeSlot nouveauCreneau = new TimeSlot(heureDebut, heureFin);
+
+                    // Vérifie que la classe est disponible
+                    List<TimeSlot> slotsClasse = occupationClasse.get(classe.getId()).get(dateSession);
+                    boolean classeLibre = slotsClasse.stream().noneMatch(slot -> slot.overlaps(nouveauCreneau));
+                    if (!classeLibre) continue;
+
+                    // Trouver une salle disponible
+                    for (Salle salle : salles) {
+                        occupationSalle.putIfAbsent(salle.getId(), new HashMap<>());
+                        occupationSalle.get(salle.getId()).putIfAbsent(dateSession, new ArrayList<>());
+                        List<TimeSlot> slotsSalle = occupationSalle.get(salle.getId()).get(dateSession);
+
+                        boolean salleLibre = slotsSalle.stream().noneMatch(slot -> slot.overlaps(nouveauCreneau));
+                        if (!salleLibre) continue;
+
+                        // Tout est OK → créer la session
+                        SessionCours session = new SessionCours();
+                        session.setClasseId(classe.getId());
+                        session.setDateSession(dateSession);
+                        session.setHeureDebut(heureDebut);
+                        session.setHeureFin(heureFin);
+                        session.setNombreHeures(2);
+                        session.setMode(ModeCours.PRESENTIEL);
+                        session.setCoursId(coursList.get(sessionsCrees % coursList.size()).getId());
+                        session.setSalleId(salle.getId());
+                        session.setValide(true);
+
+                        sessions.add(session);
+
+                        // Marquer les créneaux comme occupés
+                        slotsClasse.add(nouveauCreneau);
+                        slotsSalle.add(nouveauCreneau);
+
+                        sessionsCrees++;
+                        break;
+                    }
+
+                    if (sessionsCrees >= nombreSessionsParClasse) break;
+                }
+            }
+        }
+
         sessionCoursRepository.saveAll(sessions);
+
 
         // Absences fictives
         List<Absence> absences = new ArrayList<>();

@@ -22,7 +22,7 @@ public interface ISessionCoursWebController {
     @PostMapping("")
     ResponseEntity<Map<String,Object>> Create(@RequestBody SessionRequest sessionData);
 
-    @GetMapping("/all")
+    @GetMapping("")
     ResponseEntity<Map<String,Object>> SelectAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size);

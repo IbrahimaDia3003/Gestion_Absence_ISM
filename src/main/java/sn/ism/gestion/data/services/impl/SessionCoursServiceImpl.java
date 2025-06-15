@@ -126,7 +126,7 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
     public List<SessionAllResponse> getAllSessionCoursDuJour()
     {
         LocalDate date = LocalDate.now();
-        List<SessionCours> sessions = sessionCoursRepository.findByDate(date);
+        List<SessionCours> sessions = sessionCoursRepository.findSessionCoursByDateSession(date);
 
         if (sessions.isEmpty()) {
             return Collections.emptyList(); // retourne une liste vide plutôt que null

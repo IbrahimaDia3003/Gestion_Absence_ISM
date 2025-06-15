@@ -15,7 +15,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import sn.ism.gestion.data.services.IUtilisateurService;
+import org.springframework.http.HttpMethod;
+
+
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -40,7 +47,9 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/api-docs/**"  // IMPORTANT !
                         ).permitAll()
-                        // Authentification publique
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Autorise les pré-requêtes CORS
+
+                                // Authentification publique
                         .requestMatchers("/api/utilisateurs/login").permitAll()
                         .requestMatchers("/api/web/**").permitAll()
                         .requestMatchers("/api/mobile/etudiants/**").permitAll()
@@ -60,6 +69,23 @@ public class SecurityConfig {
 
 
     @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "https://absence-ism-frontend-cxz2.vercel.app"
+        ));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return new CorsFilter(source);
+    }
+
+    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
@@ -77,6 +103,9 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
+
+
 
 
 

@@ -14,7 +14,7 @@ import java.util.Map;
 @RequestMapping("/api/web/absences")
 public interface IAbsenceWebController  {
 
-    @GetMapping("/all")
+    @GetMapping("")
     ResponseEntity<Map<String, Object>> SelectAll(  @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size);
 
