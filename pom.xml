@@ -117,11 +117,11 @@
 
 		<!-- Pour la gestion des images -->
 
-		<dependency>
-			<groupId>gestion_image.traite</groupId>
-			<artifactId>img</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>gestion_image.traite</groupId>-->
+<!--			<artifactId>img</artifactId>-->
+<!--			<version>0.0.1-SNAPSHOT</version>-->
+<!--		</dependency>-->
 
 
 		<!-- Swagger / OpenAPI -->
