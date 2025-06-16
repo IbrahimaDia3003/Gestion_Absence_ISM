@@ -14,6 +14,7 @@ import java.util.List;
 public interface IAbsenceService extends Service<Absence>
 {
 
+//    Absence createAbsence();
     AbsenceSimpleResponse getOne(String id);
     List<AbsenceAllResponse> getAllAbsences();
     List<AbsenceAllResponse> getAbsencebySessionId(String sessionId);

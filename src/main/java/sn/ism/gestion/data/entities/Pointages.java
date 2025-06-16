@@ -23,5 +23,6 @@ public class Pointages extends AbstractEntity
     private String vigileId; // ID du vigile qui a pointé
     private String classeLibelle; // Libellé de la classe
     private String salleCours;
+    private LocalTime heurePointage = LocalTime.now(); // Heure à laquelle le pointage a été effectué
 
 }

@@ -22,11 +22,14 @@ public class PointageServiceimpl implements PointageService
     private PointageRepository pointageRepository;
     @Autowired
     private ISessionCoursService sessionCoursService;
+
+    @Autowired
+    private SessionCoursServiceImpl sessionCoursServiceImpl;
     @Override
     public Pointages createPointage(String vigileId, EtudiantQrCodeRequest etudiantQrCode)
     {
 
-        List<SessionEtudiantQrCodeMobileResponse> sessions = sessionCoursService.getSessionsDuJourWithEtudiant();
+        List<SessionEtudiantQrCodeMobileResponse> sessions = sessionCoursServiceImpl.getEtudiantAndSessionCours();
 
         // Filtrer par matricule
         SessionEtudiantQrCodeMobileResponse session = sessions.stream()

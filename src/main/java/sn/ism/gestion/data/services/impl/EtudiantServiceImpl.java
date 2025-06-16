@@ -45,6 +45,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
     @Autowired private PaiementRepository paiementRepository;
     @Autowired private CoursRepository coursRepository;
     @Autowired private SalleRepository salleRepository;
+    @Autowired private SessionCoursServiceImpl sessionCoursServiceImpl;
 
 
     public Etudiant createEtudiant(EtudiantSimpleRequest etudiantSimpleRequest) {
@@ -221,51 +222,16 @@ public class EtudiantServiceImpl implements IEtudiantService {
     @Override
     public SessionEtudiantQrCodeMobileResponse findByQrCode(String matricule)
     {
-        LocalDate aujourdHui = LocalDate.now();
-        List<SessionCours> sessionsDuJour = sessionsCoursRepository.findSessionCoursByDateSession(aujourdHui);
-
-        for (SessionCours session : sessionsDuJour) {
-            Optional<Classe> optClasse = classeRepository.findById(session.getClasseId());
-            if (optClasse.isEmpty()) continue;
-
-            Classe classe = optClasse.get();
-            List<Etudiant> etudiants = etudiantRepository.findByclasseId(classe.getId());
-
-            for (Etudiant etudiant : etudiants) {
-                if (!etudiant.getMatricule().equals(matricule)) continue;
-
-                Optional<Utilisateur> optUtilisateur = utilisateurRepository.findById(etudiant.getUtilisateurId());
-                if (optUtilisateur.isEmpty()) continue;
-
-                Utilisateur utilisateur = optUtilisateur.get();
-
-                SessionEtudiantQrCodeMobileResponse dto = new SessionEtudiantQrCodeMobileResponse();
-                dto.setSessionId(session.getId());
-                dto.setNomComplet(utilisateur.getPrenom() + " " + utilisateur.getNom());
-                dto.setMatricule(etudiant.getMatricule());
-                dto.setClasseLibelle(classe.getLibelle());
-                dto.setDateSession(session.getDateSession());
-                dto.setHeureSession(session.getHeureDebut());
-                coursRepository.findById(session.getCoursId()).ifPresent(c -> {
-                    dto.setCours(c.getLibelle());
-                });
-                salleRepository.findById(session.getSalleId()).ifPresent(salle -> {
-                    dto.setSalleCours(salle.getNumero());
-                });
+        List<SessionEtudiantQrCodeMobileResponse> sessionEtudiantQrCode = sessionCoursServiceImpl.getEtudiantAndSessionCours();
+        if (sessionEtudiantQrCode.isEmpty())
+            return null; // Aucune session trouvée pour le jour
 
 
-
-                List<Paiement> paiements = paiementRepository.findAll();
-                Optional<Paiement> paiement = paiements.stream()
-                        .filter(paiement1 -> paiement1.getEtudiantId().equals(etudiant.getId())
-                        ).findFirst();
-                dto.setPaiementStatut(paiement.get().getStatus());
-
-                return dto;
-            }
-        }
-
-        return null;
+        return sessionEtudiantQrCode.stream().filter(
+                session -> session.getMatricule().equals(matricule))
+                .findFirst().orElseThrow(() ->
+                 new EntityNotFoundExecption("Aucune session trouvée pour l'étudiant avec le matricule: " + matricule)
+        );
 
     }
 

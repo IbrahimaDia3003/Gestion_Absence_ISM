@@ -1,5 +1,6 @@
 package sn.ism.gestion.data.services.impl;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -7,16 +8,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import sn.ism.gestion.data.entities.Absence;
-import sn.ism.gestion.data.entities.Etudiant;
-import sn.ism.gestion.data.entities.SessionCours;
-import sn.ism.gestion.data.entities.Utilisateur;
+import sn.ism.gestion.data.entities.*;
 import sn.ism.gestion.data.enums.Situation;
 import sn.ism.gestion.data.repositories.*;
 import sn.ism.gestion.data.repositories.EtudiantRepository;
 import sn.ism.gestion.data.repositories.AbsenceRepository;
 import sn.ism.gestion.data.services.IAbsenceService;
+import sn.ism.gestion.data.services.ISessionCoursService;
 import sn.ism.gestion.utils.exceptions.EntityNotFoundExecption;
 import sn.ism.gestion.utils.mapper.AbsenceMapper;
 import sn.ism.gestion.web.dto.Request.AbsenceRequest;
@@ -43,6 +43,12 @@ public class AbsenceServiceImpl implements IAbsenceService {
     private ClasseRepository classeRepository;
     @Autowired
     private CoursRepository coursRepository;
+    @Autowired
+    PointageRepository pointageRepository;
+    @Autowired
+    JustificationRepository justificationRepository;
+    @Autowired
+    private SessionCoursServiceImpl sessionCoursServiceImpl;
 
 
     @Override
@@ -50,15 +56,56 @@ public class AbsenceServiceImpl implements IAbsenceService {
         return absenceRepository.save(object);
     }
 
-//    @Override
-//    public Absence createAbsence(AbsenceRequest absenceRequest) {
-//    var existingEtudiant = etudiantRepository.findEtudiantById(absenceRequest.getEtudiantId())
-//            .orElseThrow(()-> new RuntimeException("Etudiant not found ou id baxxoul"));
-//
-//        Absence absenceCreate = absenceMapper.toEntityR(absenceRequest);
-//        absenceCreate.setEtudiantId(existingEtudiant.getId());
-//        return absenceRepository.save(absenceCreate);
-//    }
+
+    @Scheduled(cron = "0 0 21 * * *") // Tous les jours à 18h
+    public void createAbsence()
+    {
+        LocalDate aujourdhui = LocalDate.now();
+        List<Pointages> pointages = pointageRepository.findPointagesByDateSession(aujourdhui);
+
+        var sessions = sessionCoursServiceImpl.getEtudiantAndSessionCours();
+        pointages.stream().map(
+            pointage ->
+            {
+                Absence absence = new Absence();
+                absence.setSessionId(pointage.getSessionId());
+                absence.setJustifiee(false);
+                absence.setHeurePointage(pointage.getHeurePointage());
+                etudiantRepository.findByMatricule(pointage.getMatricule()).ifPresent(
+                        etudiant -> absence.setEtudiantId(etudiant.getId())
+                );
+
+                if (pointage.getHeurePointage().isAfter(pointage.getHeureSession()))
+                {
+                    absence.setType(Situation.RETARD);
+                }
+                else
+                {
+                    absence.setType(Situation.PRESENT);
+                }
+               return absenceRepository.save(absence);
+            });
+
+
+        sessions.stream()
+                .filter(sessionEtudiant ->
+                        pointages.stream()
+                                .noneMatch(pointage -> pointage.getMatricule().equals(sessionEtudiant.getMatricule()))
+                )
+                .forEach(sessionEtudiant -> {
+                    Absence absence = new Absence();
+                    etudiantRepository.findByMatricule(sessionEtudiant.getMatricule()).ifPresent(
+                            etudiant -> absence.setEtudiantId(etudiant.getId())
+                    );
+                    absence.setSessionId(sessionEtudiant.getSessionId());
+                    absence.setJustifiee(false);
+                    absence.setHeurePointage(null);
+                    absence.setType(Situation.ABSENCE);
+                    absenceRepository.save(absence);
+                });
+
+
+    }
 
 
     public Absence pointerEtudiantByMatricule(String sessionId, String matricule) {
