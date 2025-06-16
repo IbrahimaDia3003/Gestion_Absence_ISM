@@ -243,9 +243,16 @@ public class EtudiantServiceImpl implements IEtudiantService {
                 dto.setSessionId(session.getId());
                 dto.setNomComplet(utilisateur.getPrenom() + " " + utilisateur.getNom());
                 dto.setMatricule(etudiant.getMatricule());
-                dto.setCours(classe.getLibelle());
+                dto.setClasseLibelle(classe.getLibelle());
                 dto.setDateSession(session.getDateSession());
                 dto.setHeureSession(session.getHeureDebut());
+                coursRepository.findById(session.getCoursId()).ifPresent(c -> {
+                    dto.setCours(c.getLibelle());
+                });
+                salleRepository.findById(session.getSalleId()).ifPresent(salle -> {
+                    dto.setSalleCours(salle.getNumero());
+                });
+
 
 
                 List<Paiement> paiements = paiementRepository.findAll();
@@ -316,7 +323,7 @@ public class EtudiantServiceImpl implements IEtudiantService {
         for (String absenceId : absenceIds) {
             Optional<Absence> absenceOpt = absenceRepository.findById(absenceId);
             if (absenceOpt.isPresent()) {
-                Justification justification = justificationRepository.findByAbsenceId(absenceOpt.get().getId());
+                Justification justification = justificationRepository.findJustificationByAbsenceId(absenceOpt.get().getId());
                 if (justification != null) {
                     justifications.add(justification);
                 }

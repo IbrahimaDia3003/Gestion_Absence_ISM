@@ -12,13 +12,13 @@ import lombok.Setter;
 @Setter
 public class JustificationSimpleResponse
 {
-    
-    private String absenceId;
+    private String id;
+//    private String absenceId;
     private String commentaire;
     private String fichierUrl;
     private StatutJustification statut;
     private LocalDate dateSoumission;
     private String nomCompletEtudiant;
     private String classeEtudiant;
-
+    private String imageUrl;
 }

@@ -2,7 +2,6 @@ package sn.ism.gestion;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -182,8 +181,8 @@ public class DataInitializer {
 
         // Génère une liste aléatoire de dates (dans les 30 prochains jours)
         List<LocalDate> datesPossibles = new ArrayList<>();
-        LocalDate startDate = LocalDate.now().plusDays(1);
-        for (int i = 0; i < 30; i += random.nextInt(2) + 1) { // saut de 1 à 2 jours
+        LocalDate startDate = LocalDate.now().plusDays(0);
+        for (int i = 0; i < 30; i += random.nextInt(2)) { // saut de 1 à 2 jours
             datesPossibles.add(startDate.plusDays(i));
         }
         Collections.shuffle(datesPossibles);
@@ -235,7 +234,7 @@ public class DataInitializer {
                     session.setDateSession(date);
                     session.setHeureDebut(heureDebut);
                     session.setHeureFin(heureFin);
-                    session.setNombreHeures(2);
+                    session.setNombreHeures(2*classes.size());
                     session.setMode(ModeCours.PRESENTIEL);
                     session.setCoursId(coursList.get(sessionsAjoutees % coursList.size()).getId());
                     session.setSalleId(salleLibre.getId());
@@ -295,6 +294,7 @@ public class DataInitializer {
             justification.setAbsenceId(absences.get(i).getId());
             justification.setCommentaire("daw diangu rek dou dara");
             justification.setFichierUrl("justification" + i + ".pdf");
+
             justification.setStatut(StatutJustification.EN_ATTENTE);
 
             justifications.add(justification);

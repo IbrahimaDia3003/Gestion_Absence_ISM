@@ -6,7 +6,10 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 
 @EnableMongoAuditing
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+        "sn.ism.gestion",
+        "gestion_image.traite.img" // très important
+})
 public class GestionApplication {
 
     public static void main(String[] args) {

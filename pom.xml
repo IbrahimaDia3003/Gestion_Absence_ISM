@@ -115,6 +115,15 @@
 			<version>5.2.2</version>
 		</dependency>
 
+		<!-- Pour la gestion des images -->
+
+		<dependency>
+			<groupId>gestion_image.traite</groupId>
+			<artifactId>img</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+
 		<!-- Swagger / OpenAPI -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -162,6 +171,7 @@
 							<artifactId>mapstruct-processor</artifactId>
 							<version>${mapstruct.version}</version>
 						</path>
+						<packaging>jar</packaging>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>

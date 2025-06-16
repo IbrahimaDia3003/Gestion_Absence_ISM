@@ -19,9 +19,8 @@ public interface IAdminWebController extends Controller<Admin>
     ResponseEntity<Map<String, Object>> Create(@Valid @RequestBody AdminSimpleRequest request,
                                                BindingResult bindingResult);
 
-    @PutMapping("/{id}/valider")
+    @PutMapping("/{justificationId}/valider")
     ResponseEntity<Map<String,Object>> traiterJustification(
-            @PathVariable String id,
-            @RequestParam JustificationValidationRequest request
-            );
+            @PathVariable String justificationId,
+            @RequestBody JustificationValidationRequest request);
 }

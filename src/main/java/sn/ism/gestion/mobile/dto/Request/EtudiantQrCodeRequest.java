@@ -10,8 +10,7 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
-public class
-EtudiantQrCodeRequest
+public class  EtudiantQrCodeRequest
 {
     private String nomComplet;
     private String sessionId;
@@ -20,4 +19,6 @@ EtudiantQrCodeRequest
     private LocalDate dateSession; // Format ISO ou "02/06/2025"
     private LocalTime heureSession; // Exemple : "10h00"
     private StatusPaiment paiementStatut; // "à jour", "non payé", etc.
+    private String classeLibelle; // Libellé de la classe
+    private String salleCours;
 }

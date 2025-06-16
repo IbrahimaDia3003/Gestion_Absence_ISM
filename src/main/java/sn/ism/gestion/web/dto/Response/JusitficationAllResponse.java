@@ -17,4 +17,5 @@ public class JusitficationAllResponse
     private String commentaire;
     private StatutJustification statut;
     private LocalDate dateSoumission;
+//    private Multiple imageUrl;
 }

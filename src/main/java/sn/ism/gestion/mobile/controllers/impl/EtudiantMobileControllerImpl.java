@@ -33,9 +33,7 @@ import java.util.Optional;
 public class EtudiantMobileControllerImpl implements IEtudiantMobileController {
 
     @Autowired private IEtudiantService etudiantService;
-    @Autowired private EtudiantMapper etudiantMapper;
     @Autowired private ISessionCoursService sessionCoursService;
-    @Autowired private AbsenceMapper absenceMapper;
     @Autowired private IJustificationService justificationService;
     @Autowired private JustificationMapper justificationMapper;
     @Autowired private SessionMapper sessionMapper;

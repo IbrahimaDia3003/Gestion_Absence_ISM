@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 import sn.ism.gestion.data.entities.Justification;
 import sn.ism.gestion.data.enums.StatutJustification;
 
@@ -19,6 +20,9 @@ public class JustificationMobileRequest {
     private String commentaire;
 
     private String fichierUrl;
+
+    private MultipartFile imageUrl; // <-- image envoyée depuis mobile/front
+
 
     @NotBlank(message = "Le statut est requis")
     private StatutJustification statut = StatutJustification.EN_ATTENTE ;

@@ -13,7 +13,7 @@ public interface JustificationMapper {
 
     JustificationSimpleMobileResponse toDto(Justification Justification);
 
-    JusitficationAllResponse toDtoWeb(Justification Justification);
+//    JusitficationAllResponse toDtoWeb(Justification Justification);
 
 
     Justification toEntity(Justification request);

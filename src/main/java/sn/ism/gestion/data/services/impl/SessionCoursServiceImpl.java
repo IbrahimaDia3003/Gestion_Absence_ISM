@@ -14,6 +14,7 @@ import sn.ism.gestion.data.repositories.*;
 import sn.ism.gestion.data.services.ISessionCoursService;
 import sn.ism.gestion.mobile.dto.Response.SessionEtudiantQrCodeMobileResponse;
 import sn.ism.gestion.web.dto.Response.SessionAllResponse;
+import sn.ism.gestion.web.dto.Response.SessionSimpleResponse;
 
 @Service
 public class SessionCoursServiceImpl implements ISessionCoursService {
@@ -113,6 +114,31 @@ public class SessionCoursServiceImpl implements ISessionCoursService {
         return reponses;
 
 
+    }
+
+    @Override
+    public SessionSimpleResponse findSessionCoursById(String id)
+    {
+        SessionCours session = sessionCoursRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Session non trouvée"));
+        SessionSimpleResponse response = new SessionSimpleResponse();
+        response.setId(session.getId());
+        response.setDate(session.getDateSession());
+        response.setHeureDebut(session.getHeureDebut());
+        response.setHeureFin(session.getHeureFin());
+        response.setMode(session.getMode());
+        coursRepository.findById(session.getCoursId()).ifPresent(c -> {
+            response.setCoursLibelle(c.getLibelle());
+        });
+        classeRepository.findById(session.getClasseId()).ifPresent(classe -> {
+            response.setClasseLibelle(classe.getLibelle());
+        });
+        salleRepository.findById(session.getSalleId()).ifPresent(salle -> {
+            response.setSalleCours(salle.getNumero());
+        });
+
+
+        return response;
     }
 
 //    @Override

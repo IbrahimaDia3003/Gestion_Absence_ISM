@@ -31,9 +31,9 @@ import lombok.RequiredArgsConstructor;
 public class JustificationWebControllerImpl implements IJustificationWebController
 {
     @Autowired
-    private final IJustificationService justificationService;
+    private IJustificationService justificationService;
     @Autowired
-    private final JustificationMapper justificationMapper;
+    private JustificationMapper justificationMapper;
 
     @Override
     public ResponseEntity<Map<String, Object>> Create(JustificationRequest request, BindingResult bindingResult) {
@@ -49,6 +49,16 @@ public class JustificationWebControllerImpl implements IJustificationWebControll
         Justification entityJustification = justificationMapper.toEntity(justification);
 
         return new ResponseEntity<>(RestResponse.response(HttpStatus.CREATED, entityJustification, "JustificationCreate"), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> findJustification(String absenceId)
+    {
+        JustificationSimpleResponse justificationSimpleResponse = justificationService.getJustificationByIdAbsenceId(absenceId);
+        if (justificationSimpleResponse != null)
+            return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, justificationSimpleResponse, "JustificationSimpleResponse"), HttpStatus.OK);
+
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.NO_CONTENT, null,"Justification not found"), HttpStatus.NO_CONTENT);
     }
 
     @Override

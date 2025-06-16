@@ -55,6 +55,9 @@ public class PointageServiceimpl implements PointageService
         pointage.setHeureSession(session.getHeureSession());
         pointage.setPaiementStatut(session.getPaiementStatut());
         pointage.setVigileId(vigileId);
+        pointage.setClasseLibelle(session.getClasseLibelle());
+        pointage.setSalleCours(session.getSalleCours());
+
 
         return pointageRepository.save(pointage);
     }

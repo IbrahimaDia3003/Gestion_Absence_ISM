@@ -18,4 +18,5 @@ public interface IJustificationService extends Service<Justification> {
 
     JustificationSimpleResponse findByIdWitt(String id);
 
+    JustificationSimpleResponse getJustificationByIdAbsenceId(String absenceId);
 }

@@ -17,13 +17,13 @@ import sn.ism.gestion.data.enums.Role;
 public class SessionSimpleResponse {
 
     private  String id;
-    private String coursId;
+    private String coursLibelle;
     private LocalDate date;
     private LocalTime heureDebut;
     private LocalTime heureFin;
     private int nombreHeures;
     private ModeCours mode;
-    private String classeId;
+    private String classeLibelle;
     private boolean valide;
     private String salleCours;
 

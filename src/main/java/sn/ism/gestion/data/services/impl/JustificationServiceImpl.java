@@ -52,17 +52,20 @@ public  class JustificationServiceImpl implements IJustificationService
 //    }
 
     @Override
-    public Justification traiterJustication(String absenceId, JustificationValidationRequest justificationRequest) {
-        Absence absence = absenceRepository.findById(absenceId)
-                .orElseThrow(() -> new EntityNotFoundExecption("Absence non trouvée"));
-
-        Justification justification = justificationRepository.findById(absence.getJustificationId())
+    public Justification traiterJustication(String id, JustificationValidationRequest justificationRequest)
+    {
+        Justification justification = justificationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundExecption("Justification non trouvée"));
 
-        if (!justification.getStatut().equals(StatutJustification.EN_ATTENTE)) {
+        Absence absence = absenceRepository.findById(justification.getAbsenceId())
+                .orElseThrow(() -> new EntityNotFoundExecption("Absence non trouvée"));
+
+        absence.setJustifiee(true);
+        if (justification.getStatut().equals(StatutJustification.VALIDEE))
             throw new IllegalStateException("Justification déjà traitée");
-        }
-        justification.setStatut(StatutJustification.valueOf(justificationRequest.getStatut()));
+
+        absenceRepository.save(absence);
+        justification.setStatut(justificationRequest.getStatut());
         return justificationRepository.save(justification);
     }
 
@@ -93,7 +96,6 @@ public  class JustificationServiceImpl implements IJustificationService
     @Override
     public JustificationSimpleResponse findByIdWitt(String id)
     {
-
         Justification justification = justificationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aucune justification"));
 
@@ -112,7 +114,7 @@ public  class JustificationServiceImpl implements IJustificationService
         SessionCours session = sessionCoursRepository.findById(absence.getSessionId()).orElse(null);
 
         JustificationSimpleResponse dto = new JustificationSimpleResponse();
-        dto.setAbsenceId(absence.getId());
+//        dto.setAbsenceId(absence.getId());
         dto.setCommentaire(justification.getCommentaire());
         dto.setDateSoumission(justification.getDateSoumission());
         dto.setFichierUrl(justification.getFichierUrl());
@@ -121,6 +123,36 @@ public  class JustificationServiceImpl implements IJustificationService
         dto.setClasseEtudiant(classe.getLibelle());
 
         return dto;
+    }
+
+    @Override
+    public JustificationSimpleResponse getJustificationByIdAbsenceId(String absenceId)
+    {
+        Justification justification = justificationRepository.findJustificationByAbsenceId(absenceId);
+        if (justification == null) {
+            throw new EntityNotFoundExecption("Justification non trouvée pour l'absence ID: " + absenceId);
+        }
+        JustificationSimpleResponse response = new JustificationSimpleResponse();
+        response.setId(justification.getId());
+        response.setCommentaire(justification.getCommentaire());
+        response.setStatut(justification.getStatut());
+        response.setDateSoumission(justification.getDateSoumission());
+        response.setFichierUrl(justification.getFichierUrl());
+//        response.setAbsenceId(justification.getAbsenceId());
+        response.setImageUrl(justification.getUrl()); // ✅ nouvelle ligne
+        // Récupération de l'étudiant associé à cette justification
+        Etudiant etudiantOpt = etudiantRepository.findEtudiantByAbsenceIdsContaining(justification.getAbsenceId());
+
+        etudiantRepository.findById(etudiantOpt.getId()).ifPresent(e -> {
+            utilisateurRepository.findById(e.getUtilisateurId()).ifPresent(u -> {
+                response.setNomCompletEtudiant(u.getPrenom() + " " + u.getNom());
+            });
+            classeRepository.findById(e.getClasseId()).ifPresent(c -> {
+                response.setClasseEtudiant(c.getLibelle());
+            });
+        });
+
+        return response;
     }
 
     @Override
@@ -150,7 +182,8 @@ public  class JustificationServiceImpl implements IJustificationService
                     justificationResponse.setStatut(justification.getStatut());
                     justificationResponse.setDateSoumission(justification.getDateSoumission());
                     justificationResponse.setClasseEtudiant(etudiantOpt.getUtilisateurId());
-                    
+//                    justificationResponse.setImageUrl(justification.getUrl()); // ✅ nouvelle ligne
+
                     etudiantRepository.findById(etudiantOpt.getId()).ifPresent(e -> {
                         utilisateurRepository.findById(e.getUtilisateurId()).ifPresent(u -> {
                             justificationResponse.setNomCompletEtudiant(u.getPrenom() + " " + u.getNom());

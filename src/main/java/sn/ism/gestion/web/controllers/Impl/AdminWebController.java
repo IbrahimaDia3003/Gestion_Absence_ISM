@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +28,11 @@ import sn.ism.gestion.web.dto.RestResponse;
 @RestController
 public class AdminWebController implements IAdminWebController {
 
+    @Autowired
     private final IJustificationService justificationService;
+    @Autowired
     private final IAdminService adminService;
+    @Autowired
     private final AdminMapper adminMapper;
 
     @Override
@@ -88,10 +92,19 @@ public class AdminWebController implements IAdminWebController {
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> traiterJustification(String id, JustificationValidationRequest request) {
-        Justification justificationAbsence = justificationService.traiterJustication(id, request);
+    public ResponseEntity<Map<String, Object>> traiterJustification(String justificationId, JustificationValidationRequest request)
+    {
+        Justification justificationAbsence = justificationService.traiterJustication(justificationId, request);
+
+        if (justificationAbsence == null)
+            return new ResponseEntity<>(
+                    RestResponse.response(
+                            HttpStatus.NO_CONTENT, null, "Justification not found or already processed"),
+                    HttpStatus.NO_CONTENT);
+
         return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.ACCEPTED, justificationAbsence, "traitementJustifiction"),
+                RestResponse.response(
+                        HttpStatus.ACCEPTED, justificationAbsence, "traitementJustifiction"),
                 HttpStatus.ACCEPTED);
     }
 

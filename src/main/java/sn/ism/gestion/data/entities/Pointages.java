@@ -21,4 +21,7 @@ public class Pointages extends AbstractEntity
     private StatusPaiment paiementStatut;
     private String sessionId; // ID de la session pointée
     private String vigileId; // ID du vigile qui a pointé
+    private String classeLibelle; // Libellé de la classe
+    private String salleCours;
+
 }

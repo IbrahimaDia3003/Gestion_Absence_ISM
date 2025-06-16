@@ -2,6 +2,7 @@ package sn.ism.gestion.mobile.dto.Response;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 import sn.ism.gestion.data.enums.StatutJustification;
 
 import java.time.LocalDate;
@@ -15,5 +16,5 @@ public class JustificationSimpleMobileResponse {
     private String fichierUrl;
     private StatutJustification statut;
     private LocalDate dateSoumission;
-
+    private MultipartFile imageUrl;
 }
