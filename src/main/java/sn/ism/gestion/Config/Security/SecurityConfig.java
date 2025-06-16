@@ -54,6 +54,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/web/**").permitAll()
                         .requestMatchers("/api/mobile/etudiants/**").permitAll()
                         .requestMatchers("/api/mobile/vigiles/**").permitAll()
+                        .requestMatchers("/api/web/admin/**").permitAll()
+
 
 
                         // Routes sécurisées
