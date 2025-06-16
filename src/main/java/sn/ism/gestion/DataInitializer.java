@@ -174,20 +174,107 @@ public class DataInitializer {
         coursRepository.saveAll(coursList);
 
 
+//        // Sessions de cours
+//        List<SessionCours> sessions = new ArrayList<>();
+//        int sessionsParClasse = 5;
+//        Random random = new Random();
+//
+//        // Génère une liste aléatoire de dates (dans les 30 prochains jours)
+////        List<LocalDate> datesPossibles = new ArrayList<>();
+//
+//        List<LocalDate> datesPossibles = List.of(
+//        LocalDate.of(2025, 6, 14),
+//        LocalDate.of(2025, 6, 15),
+//        LocalDate.of(2025, 6, 16),
+//        LocalDate.of(2025, 6, 17),
+//        LocalDate.of(2025, 6, 18)
+//
+//
+//        );
+////        LocalDate startDate = LocalDate.now();
+////        for (int i = 0; i < 30; i += random.nextInt(2)) { // saut de 1 à 2 jours
+////            datesPossibles.add(startDate.plusDays(i));
+////        }
+//        Collections.shuffle(datesPossibles);
+//
+//        // Maps pour suivre l'occupation des classes et salles
+//        Map<String, Map<LocalDate, Set<LocalTime>>> occupationClasse = new HashMap<>();
+//        Map<String, Map<LocalDate, Set<LocalTime>>> occupationSalle = new HashMap<>();
+//
+//        for (Classe classe : classes) {
+//            occupationClasse.putIfAbsent(classe.getId(), new HashMap<>());
+//            Set<LocalDate> datesDejaUtilisees = new HashSet<>();
+//
+//            int sessionsAjoutees = 0;
+//            int dateIndex = 0;
+//
+//            while (sessionsAjoutees < sessionsParClasse && dateIndex < datesPossibles.size()) {
+//                LocalDate date = datesPossibles.get(dateIndex++);
+//                if (datesDejaUtilisees.contains(date)) continue; // évite répétition de dates
+//                datesDejaUtilisees.add(date);
+//
+//                occupationClasse.get(classe.getId()).putIfAbsent(date, new HashSet<>());
+//
+//                for (int heure = 8; heure <= 16; heure += 2) {
+//                    LocalTime heureDebut = LocalTime.of(heure, 0);
+//                    LocalTime heureFin = heureDebut.plusHours(2);
+//
+//                    // Vérifie si classe est disponible
+//                    Set<LocalTime> heuresClasse = occupationClasse.get(classe.getId()).get(date);
+//                    if (heuresClasse.contains(heureDebut)) continue;
+//
+//                    // Trouve une salle libre
+//                    Salle salleLibre = null;
+//                    for (Salle salle : salles) {
+//                        occupationSalle.putIfAbsent(salle.getId(), new HashMap<>());
+//                        occupationSalle.get(salle.getId()).putIfAbsent(date, new HashSet<>());
+//
+//                        Set<LocalTime> heuresSalle = occupationSalle.get(salle.getId()).get(date);
+//                        if (!heuresSalle.contains(heureDebut)) {
+//                            salleLibre = salle;
+//                            break;
+//                        }
+//                    }
+//
+//                    if (salleLibre == null) continue;
+//
+//                    // Crée la session
+//                    SessionCours session = new SessionCours();
+//                    session.setClasseId(classe.getId());
+//                    session.setDateSession(date);
+//                    session.setHeureDebut(heureDebut);
+//                    session.setHeureFin(heureFin);
+//                    session.setNombreHeures(2*classes.size());
+//                    session.setMode(ModeCours.PRESENTIEL);
+//                    session.setCoursId(coursList.get(sessionsAjoutees % coursList.size()).getId());
+//                    session.setSalleId(salleLibre.getId());
+//                    session.setValide(true);
+//
+//                    // Enregistre la session et occupe les créneaux
+//                    sessions.add(session);
+//                    occupationClasse.get(classe.getId()).get(date).add(heureDebut);
+//                    occupationSalle.get(salleLibre.getId()).get(date).add(heureDebut);
+//                    sessionsAjoutees++;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        sessionCoursRepository.saveAll(sessions);
+
+
         // Sessions de cours
         List<SessionCours> sessions = new ArrayList<>();
         int sessionsParClasse = 5;
-        Random random = new Random();
 
-        // Génère une liste aléatoire de dates (dans les 30 prochains jours)
-        List<LocalDate> datesPossibles = new ArrayList<>();
-        LocalDate startDate = LocalDate.now().plusDays(0);
-        for (int i = 0; i < 30; i += random.nextInt(2)) { // saut de 1 à 2 jours
-            datesPossibles.add(startDate.plusDays(i));
-        }
-        Collections.shuffle(datesPossibles);
+// Dates fixes : 14, 15, 16 juin 2025
+        List<LocalDate> datesPossibles = List.of(
+                LocalDate.of(2025, 6, 14),
+                LocalDate.of(2025, 6, 16),
+                LocalDate.of(2025, 6, 18)
+        );
 
-        // Maps pour suivre l'occupation des classes et salles
+// Maps pour suivre l'occupation des classes et salles
         Map<String, Map<LocalDate, Set<LocalTime>>> occupationClasse = new HashMap<>();
         Map<String, Map<LocalDate, Set<LocalTime>>> occupationSalle = new HashMap<>();
 
@@ -209,7 +296,7 @@ public class DataInitializer {
                     LocalTime heureDebut = LocalTime.of(heure, 0);
                     LocalTime heureFin = heureDebut.plusHours(2);
 
-                    // Vérifie si classe est disponible
+                    // Vérifie si la classe est disponible
                     Set<LocalTime> heuresClasse = occupationClasse.get(classe.getId()).get(date);
                     if (heuresClasse.contains(heureDebut)) continue;
 
@@ -234,7 +321,7 @@ public class DataInitializer {
                     session.setDateSession(date);
                     session.setHeureDebut(heureDebut);
                     session.setHeureFin(heureFin);
-                    session.setNombreHeures(2*classes.size());
+                    session.setNombreHeures(2 * classes.size());
                     session.setMode(ModeCours.PRESENTIEL);
                     session.setCoursId(coursList.get(sessionsAjoutees % coursList.size()).getId());
                     session.setSalleId(salleLibre.getId());
@@ -251,8 +338,6 @@ public class DataInitializer {
         }
 
         sessionCoursRepository.saveAll(sessions);
-
-
 
 
         // Absences fictives

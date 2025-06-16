@@ -8,7 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Document(collection = "salles")
-public class Salle extends AbstractEntity {
+public class Salle extends AbstractEntity
+{
     private String nom;
     private String numero;
     private int nombrePlaces;
